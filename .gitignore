@@ -1,0 +1,25 @@
+# ignore everything
+*.*
+
+# whitelist important files
+!.gitignore
+!.gitattributes
+!version.txt
+!install_dependencies.sh
+
+# whitelist important folders
+!/assets/**
+!/external/**
+!/testing/**
+!/readme/**
+
+# whitelist cmake stuff
+!/ECG*/CMakeLists.txt
+!/ECG*/CMakePresets.json
+!/ECG*/cmake/GlobalSettings.cmake
+!/ECG*/cmake/LinuxDependencies.cmake
+!/ECG*/cmake/SourcesList.cmake
+
+# whitelist source code
+!/ECG*/src/*.cpp
+!/ECG*/src/*.h
