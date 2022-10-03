@@ -6,6 +6,7 @@
 !.gitattributes
 !version.txt
 !install_dependencies.sh
+!readme.txt
 
 # whitelist important folders
 !/assets/**
