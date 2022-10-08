@@ -81,8 +81,8 @@ int main(int argc, char **argv) {
         glClearColor(1, 1, 1, 1);
 
         while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glfwPollEvents();
             drawTeapot();
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
