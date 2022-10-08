@@ -35,7 +35,7 @@ find_package(OpenGL REQUIRED)
 ################################################################################
 # All_Sources is imported from SourcesList.cmake
 message(STATUS "All_Sources: ${All_Sources}")
-add_executable(${PROJECT_NAME} ${All_Sources} ../assets/settings.ini)
+add_executable(${PROJECT_NAME} ${All_Sources} ../assets/settings.ini src/Callbacks.h)
 
 set(ROOT_NAMESPACE ${PROJECT_NAME})
 
