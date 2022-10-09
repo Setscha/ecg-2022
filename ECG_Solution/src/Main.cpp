@@ -21,16 +21,9 @@
 // Prototypes
 /* --------------------------------------------- */
 
-void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-
 /* --------------------------------------------- */
 // Global variables
 /* --------------------------------------------- */
-
-double pitch = 0;
-double yaw = -90;
-float distance = 6;
 
 /* --------------------------------------------- */
 // Main
@@ -172,31 +165,4 @@ int main(int argc, char **argv) {
     glfwTerminate();
 
     return EXIT_SUCCESS;
-}
-
-double pxpos = -1;
-double pypos = -1;
-
-void cursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if (pxpos >= 0) {
-            double deltaX = xpos - pxpos;
-            double deltaY = ypos - pypos;
-            pitch -= deltaY;
-            pitch = glm::min(glm::max(-89.999, pitch), 89.999);
-            yaw += deltaX;
-            yaw = fmod(yaw, 360.0);
-        }
-        pxpos = xpos;
-        pypos = ypos;
-    }
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        pxpos = -1;
-        pypos = -1;
-    }
-}
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    distance -= (float)yoffset;
-    distance = glm::max(1.0f, distance);
 }
