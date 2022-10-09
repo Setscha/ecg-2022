@@ -3,7 +3,10 @@
 #include "Transform.h"
 
 glm::mat4 Transform::getMatrix() const {
-    return viewTransform * transformMatrix;
+    if (viewTransform == nullptr) {
+        return transformMatrix;
+    }
+    return *viewTransform * transformMatrix;
 }
 
 Transform& Transform::translate(float x, float y, float z) {
@@ -27,12 +30,12 @@ Transform& Transform::rotateY(float degrees) {
     return *this;
 }
 
-Transform &Transform::setViewTransform(const glm::mat4& viewTransformMatrix) {
+Transform& Transform::setViewTransform(glm::mat4* viewTransformMatrix) {
     viewTransform = viewTransformMatrix;
     return *this;
 }
 
-Transform &Transform::scale(float x, float y, float z) {
+Transform& Transform::scale(float x, float y, float z) {
     transformMatrix = glm::transpose(glm::mat4({
         x, 0.0f, 0.0f, 0.0f,
         0.0f, y, 0.0f, 0.0f,

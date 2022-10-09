@@ -111,9 +111,15 @@ int main(int argc, char **argv) {
         glm::mat4 viewMatrix;
 
         Transform teapot1Transform;
-        teapot1Transform.rotateY(180).translate(-1.5, 1, 0);
+        teapot1Transform
+            .rotateY(180)
+            .translate(-1.5, 1, 0)
+            .setViewTransform(&viewMatrix);
         Transform teapot2Transform;
-        teapot2Transform.scale(1, 2, 1).translate(1.5, -1, 0);
+        teapot2Transform
+            .scale(1, 2, 1)
+            .translate(1.5, -1, 0)
+            .setViewTransform(&viewMatrix);
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -135,9 +141,6 @@ int main(int argc, char **argv) {
             viewMatrix = (glm::mat4)glm::perspective(
                     camera_fov, (double)window_width / (double)window_height, camera_near, camera_far
             ) * cameraTransform;
-
-            teapot1Transform.setViewTransform(viewMatrix);
-            teapot2Transform.setViewTransform(viewMatrix);
 
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, teapot1Transform.getMatrix());
             shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);

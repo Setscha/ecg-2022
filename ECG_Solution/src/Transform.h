@@ -12,15 +12,10 @@ private:
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f,
     }));
-    glm::mat4 viewTransform = glm::transpose(glm::mat4({
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f,
-   }));
+    glm::mat4* viewTransform = nullptr;
 public:
     glm::mat4 getMatrix() const;
-    Transform& setViewTransform(const glm::mat4& viewTransformMatrix);
+    Transform& setViewTransform(glm::mat4* viewTransformMatrix);
     Transform& translate(float x, float y, float z);
     Transform& scale(float x, float y, float z);
     Transform& rotateY(float degrees);
