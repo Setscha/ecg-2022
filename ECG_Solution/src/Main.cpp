@@ -5,16 +5,32 @@
 */
 #pragma once
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <fstream>
+#include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 #include "Utils.h"
 #include "Callbacks.h"
+#include "Utility.h"
+#include "Renderer.h"
+#include "Shader.h"
+#include "Transform.h"
 
 /* --------------------------------------------- */
 // Prototypes
 /* --------------------------------------------- */
 
+void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
 /* --------------------------------------------- */
 // Global variables
 /* --------------------------------------------- */
+
+double pitch = 0;
+double yaw = -90;
+float distance = 6;
 
 /* --------------------------------------------- */
 // Main
@@ -33,6 +49,10 @@ int main(int argc, char **argv) {
     int window_width = reader.GetInteger("window", "width", 800);
     int window_height = reader.GetInteger("window", "height", 800);
     std::string window_title = reader.Get("window", "title", "ECG 2022");
+
+    double camera_fov = reader.GetReal("camera", "fov", 60) * M_PI / 180.0;
+    double camera_near = reader.GetReal("camera", "near", 0.1);
+    double camera_far = reader.GetReal("camera", "far", 100);
 
     /* --------------------------------------------- */
     // Init framework
@@ -55,6 +75,7 @@ int main(int argc, char **argv) {
     }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+    glEnable(GL_DEPTH_TEST);
 
     glewExperimental = true;
     if (GLEW_OK != glewInit()) {
@@ -62,6 +83,8 @@ int main(int argc, char **argv) {
     }
 
     glfwSetKeyCallback(window, keyCallback);
+    glfwSetScrollCallback(window, scrollCallback);
+    glfwSetCursorPosCallback(window, cursorPosCallback);
     #if _DEBUG
         // Register your callback function.
         glDebugMessageCallback(debugCallback, nullptr);
@@ -80,10 +103,50 @@ int main(int argc, char **argv) {
     {
         glClearColor(1, 1, 1, 1);
 
+        double lastTime = glfwGetTime();
+        int nbFrames = 0;
+
+        Renderer renderer;
+        Shader shader("assets/shaders/vertex.shader", "assets/shaders/fragment.shader");
+        glm::mat4 viewMatrix;
+
+        Transform teapot1Transform;
+        teapot1Transform.rotateY(180).translate(-1.5, 1, 0);
+        Transform teapot2Transform;
+        teapot2Transform.scale(1, 2, 1).translate(1.5, -1, 0);
+
         while (!glfwWindowShouldClose(window)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            renderer.clear();
             glfwPollEvents();
-            drawTeapot();
+
+            double currentTime = glfwGetTime();
+            nbFrames++;
+            if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+                // printf and reset timer
+                printf("%f ms/frame, %d frames\n", 1000.0/double(nbFrames), nbFrames);
+                nbFrames = 0;
+                lastTime += 1.0;
+            }
+
+            // Matrices are column-major not row-major, for easier readability they are written as row-major and then
+            // transposed to work properly. see https://glm.g-truc.net/0.9.2/api/a00001.html
+            glm::mat4 cameraTransform = getOrbitCameraTransform(pitch, yaw, distance, {0, 0, 0});
+
+            viewMatrix = (glm::mat4)glm::perspective(
+                    camera_fov, (double)window_width / (double)window_height, camera_near, camera_far
+            ) * cameraTransform;
+
+            teapot1Transform.setViewTransform(viewMatrix);
+            teapot2Transform.setViewTransform(viewMatrix);
+
+            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, teapot1Transform.getMatrix());
+            shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
+            renderer.drawTeapot(shader);
+
+            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, teapot2Transform.getMatrix());
+            shader.setUniform4f("inColor", 0.7f, 0.1f, 0.2f, 1.0f);
+            renderer.drawTeapot(shader);
+
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
             if (argc > 1 && std::string(argv[1]) == "--run_headless") {
@@ -106,4 +169,31 @@ int main(int argc, char **argv) {
     glfwTerminate();
 
     return EXIT_SUCCESS;
+}
+
+double pxpos = -1;
+double pypos = -1;
+
+void cursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (pxpos >= 0) {
+            double deltaX = xpos - pxpos;
+            double deltaY = ypos - pypos;
+            pitch -= deltaY;
+            pitch = glm::min(glm::max(-89.999, pitch), 89.999);
+            yaw += deltaX;
+            yaw = fmod(yaw, 360.0);
+        }
+        pxpos = xpos;
+        pypos = ypos;
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+        pxpos = -1;
+        pypos = -1;
+    }
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    distance -= (float)yoffset;
+    distance = glm::max(1.0f, distance);
 }
