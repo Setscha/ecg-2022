@@ -2,30 +2,6 @@
 
 #include "Callbacks.h"
 
-void cursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if (pxpos >= 0) {
-            double deltaX = xpos - pxpos;
-            double deltaY = ypos - pypos;
-            pitch -= deltaY;
-            pitch = glm::min(glm::max(-89.999, pitch), 89.999);
-            yaw += deltaX;
-            yaw = fmod(yaw, 360.0);
-        }
-        pxpos = xpos;
-        pypos = ypos;
-    }
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        pxpos = -1;
-        pypos = -1;
-    }
-}
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    distance -= (float)yoffset;
-    distance = glm::max(1.0f, distance);
-}
-
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);

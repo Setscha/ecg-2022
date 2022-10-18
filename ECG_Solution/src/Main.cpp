@@ -12,10 +12,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Utils.h"
 #include "Callbacks.h"
-#include "Utility.h"
 #include "Renderer.h"
 #include "Shader.h"
 #include "Transform.h"
+#include "Camera.h"
 
 /* --------------------------------------------- */
 // Prototypes
@@ -76,8 +76,6 @@ int main(int argc, char **argv) {
     }
 
     glfwSetKeyCallback(window, keyCallback);
-    glfwSetScrollCallback(window, scrollCallback);
-    glfwSetCursorPosCallback(window, cursorPosCallback);
     #if _DEBUG
         // Register your callback function.
         glDebugMessageCallback(debugCallback, nullptr);
@@ -98,6 +96,8 @@ int main(int argc, char **argv) {
 
         double lastTime = glfwGetTime();
         int nbFrames = 0;
+
+        Camera camera(window, camera_fov, (double)window_width / (double)window_height, camera_near, camera_far);
 
         Renderer renderer;
         Shader shader("assets/shaders/vertex.shader", "assets/shaders/fragment.shader");
@@ -127,13 +127,7 @@ int main(int argc, char **argv) {
                 lastTime += 1.0;
             }
 
-            // Matrices are column-major not row-major, for easier readability they are written as row-major and then
-            // transposed to work properly. see https://glm.g-truc.net/0.9.2/api/a00001.html
-            glm::mat4 cameraTransform = getOrbitCameraTransform(pitch, yaw, distance, {0, 0, 0});
-
-            viewMatrix = (glm::mat4)glm::perspective(
-                    camera_fov, (double)window_width / (double)window_height, camera_near, camera_far
-            ) * cameraTransform;
+            viewMatrix = camera.getTransformMatrix();
 
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, teapot1Transform.getMatrix());
             shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
