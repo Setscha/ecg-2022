@@ -48,8 +48,8 @@ void Camera::cursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
         if (pxpos >= 0) {
             double deltaX = xpos - pxpos;
             double deltaY = ypos - pypos;
-            targetPosition += (float)deltaX / 25 * right;
-            targetPosition -= (float)deltaY / 25 * up;
+            targetPosition -= (float)deltaX / 50 * right;
+            targetPosition += (float)deltaY / 50 * up;
         }
         pxpos = xpos;
         pypos = ypos;
