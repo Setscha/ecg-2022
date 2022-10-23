@@ -118,14 +118,16 @@ int main(int argc, char **argv) {
             renderer.clear();
             glfwPollEvents();
 
-            double currentTime = glfwGetTime();
-            nbFrames++;
-            if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
-                // printf and reset timer
-                printf("%f ms/frame, %d frames\n", 1000.0/double(nbFrames), nbFrames);
-                nbFrames = 0;
-                lastTime += 1.0;
-            }
+            #if _DEBUG
+                double currentTime = glfwGetTime();
+                nbFrames++;
+                if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+                    // printf and reset timer
+                    printf("%f ms/frame, %d frames\n", 1000.0/double(nbFrames), nbFrames);
+                    nbFrames = 0;
+                    lastTime += 1.0;
+                }
+            #endif
 
             viewMatrix = camera.getTransformMatrix();
 
