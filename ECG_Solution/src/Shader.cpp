@@ -61,9 +61,9 @@ void Shader::setUniformMatrix4fv(const std::string& name, int size, GLboolean tr
     setUniformMatrix4fv(name, size, transposed, &matrix[0][0]);
 }
 
-void Shader::setUniformMatrix4fv(const string &name, int size, GLboolean transposed, GLfloat* matrix) {
+void Shader::setUniformMatrix4fv(const std::string &name, int size, GLboolean transposed, GLfloat* matrix) {
     activate();
-    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, matrix);
+    glUniformMatrix4fv(getUniformLocation(name), size, transposed, matrix);
 }
 
 GLint Shader::getUniformLocation(const std::string& name) {
