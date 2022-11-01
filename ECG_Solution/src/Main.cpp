@@ -108,6 +108,10 @@ int main(int argc, char **argv) {
         cubeTransform
             .rotateY(45)
             .setViewTransform(&viewMatrix);
+        Transform cylinderTransform;
+        cylinderTransform
+            .translate(2.2f, 0, 0)
+            .setViewTransform(&viewMatrix);
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -129,6 +133,10 @@ int main(int argc, char **argv) {
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
             shader.setUniform4f("inColor", 0.7f, 0.1f, 0.2f, 1.0f);
             renderer.drawCube(1.3, 2, 1.3);
+
+            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
+            shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
+            renderer.drawCylinder(18, 2, 0.6);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
