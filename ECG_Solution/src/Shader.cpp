@@ -45,6 +45,7 @@ GLuint Shader::compileShader(GLuint type, const std::string& path) const {
         glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logSize);
         char* message = new char[logSize];
         glGetShaderInfoLog(shaderId, logSize, nullptr, message);
+        std::cerr << "Error in compileShader for " << path  << ": " << message << std::endl;
         delete[] message;
     }
 
