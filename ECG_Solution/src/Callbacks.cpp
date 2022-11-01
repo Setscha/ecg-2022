@@ -6,6 +6,26 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+    if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+        GLint polygonMode;
+        glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
+
+        if (polygonMode == GL_FILL) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else if (polygonMode == GL_LINE) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+    }
+    if (key == GLFW_KEY_F2 && action == GLFW_PRESS) {
+        GLint backfaceCulling;
+        glGetIntegerv(GL_CULL_FACE, &backfaceCulling);
+
+        if (backfaceCulling == GL_TRUE) {
+            glDisable(GL_CULL_FACE);
+        } else {
+            glEnable(GL_CULL_FACE);
+        }
+    }
 }
 
 void debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
