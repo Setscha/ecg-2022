@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     glewExperimental = true;
     if (GLEW_OK != glewInit()) {
