@@ -104,15 +104,9 @@ int main(int argc, char **argv) {
         Shader shader("assets/shaders/vertex.shader", "assets/shaders/fragment.shader");
         glm::mat4 viewMatrix;
 
-        Transform teapot1Transform;
-        teapot1Transform
-            .rotateY(180)
-            .translate(-1.5, 1, 0)
-            .setViewTransform(&viewMatrix);
-        Transform teapot2Transform;
-        teapot2Transform
-            .scale(1, 2, 1)
-            .translate(1.5, -1, 0)
+        Transform cubeTransform;
+        cubeTransform
+            .rotateY(45)
             .setViewTransform(&viewMatrix);
 
         while (!glfwWindowShouldClose(window)) {
@@ -132,13 +126,9 @@ int main(int argc, char **argv) {
 
             viewMatrix = camera.getTransformMatrix();
 
-            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, teapot1Transform.getMatrix());
-            shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
-            renderer.drawTeapot(shader);
-
-            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, teapot2Transform.getMatrix());
+            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
             shader.setUniform4f("inColor", 0.7f, 0.1f, 0.2f, 1.0f);
-            renderer.drawTeapot(shader);
+            renderer.drawCube(1.3, 2, 1.3);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
