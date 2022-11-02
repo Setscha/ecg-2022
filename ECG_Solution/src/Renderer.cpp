@@ -101,6 +101,67 @@ void Renderer::drawCylinder(int segments, float height, float radius) {
     free(indices);
 }
 
+void Renderer::drawSphere(int longSegments, int latSegments, float radius) {
+    GLfloat* sphereVerticesPositions = new GLfloat[(2 + longSegments * (latSegments - 1)) * 3];
+    double latAngleIncrease = M_PI / latSegments;
+    double longAngleIncrease = M_PI * 2 / longSegments;
+    /** segment offset for index array, i.e. where the lower circle positions begin, excluding center*/
+    //int sIOffset = segments + 1;
+    /** segment offset in position array, 3 * sIOffset */
+    //int sOffset = sIOffset * 3;
+
+    sphereVerticesPositions[0] = 0;
+    sphereVerticesPositions[1] = radius;
+    sphereVerticesPositions[2] = 0;
+    sphereVerticesPositions[(2 + longSegments * (latSegments - 1)) * 3 - 3] = 0;
+    sphereVerticesPositions[(2 + longSegments * (latSegments - 1)) * 3 - 2] = -radius;
+    sphereVerticesPositions[(2 + longSegments * (latSegments - 1)) * 3 - 1] = 0;
+
+    for (int i = 1; i < latSegments; ++i) {
+        double latSin = sin(latAngleIncrease * i);
+        double latCos = cos(latAngleIncrease * i);
+        for (int j = 0; j < longSegments; ++j) {
+            // Top circle
+            sphereVerticesPositions[3 + longSegments * (i - 1) * 3 + 3 * j] = radius * latSin * cos(longAngleIncrease * j);
+            sphereVerticesPositions[3 + longSegments * (i - 1) * 3 + 3 * j + 1] = radius * latCos;
+            sphereVerticesPositions[3 + longSegments * (i - 1) * 3 + 3 * j + 2] = radius * latSin * sin(longAngleIncrease * j);
+        }
+    }
+
+    GLuint* indices = new GLuint[(2 * longSegments * (latSegments - 1)) * 3];
+    for (int j = 0; j < longSegments; ++j) {
+        // Top cap
+        indices[3 * j] = 0;
+        indices[3 * j + 1] = 1 + ((j + 1) % longSegments);
+        indices[3 * j + 2] = j + 1;
+        // Bottom cap
+        indices[(2 * longSegments * (latSegments - 1)) * 3 - (3 * j + 1)] =
+                2 + longSegments * (latSegments - 1) - 1 - (j + 1);
+        indices[(2 * longSegments * (latSegments - 1)) * 3 - (3 * j + 2)] =
+                2 + longSegments * (latSegments - 1) - 1 - (1 + ((j + 1) % longSegments));
+        indices[(2 * longSegments * (latSegments - 1)) * 3 - (3 * j + 3)] =
+                2 + longSegments * (latSegments - 1) - 1;
+    }
+
+    for (int i = 1; i < latSegments - 1; ++i) {
+        for (int j = 0; j < longSegments; ++j) {
+            // TODO: longSegments * i * 6 should be longSegments * i * 3 for the top cap, because its only tris
+            indices[longSegments * 3 + longSegments * (i - 1) * 6 + 6 * j] = longSegments * i + j + 1;
+            indices[longSegments * 3 + longSegments * (i - 1) * 6 + 6 * j + 1] = longSegments * (i - 1) + 1 + (j + 1) % longSegments;
+            indices[longSegments * 3 + longSegments * (i - 1) * 6 + 6 * j + 2] = longSegments * i + 1 + (j + 1) % longSegments;
+            indices[longSegments * 3 + longSegments * (i - 1) * 6 + 6 * j + 3] = longSegments * i + j + 1;
+            indices[longSegments * 3 + longSegments * (i - 1) * 6 + 6 * j + 4] = longSegments * (i - 1) + j + 1;
+            indices[longSegments * 3 + longSegments * (i - 1) * 6 + 6 * j + 5] = longSegments * (i - 1) + 1 + (j + 1) % longSegments;
+        }
+    }
+
+    drawBuffers(2 + longSegments * (latSegments - 1), 2 * longSegments * (latSegments - 1), sphereVerticesPositions, indices);
+
+    cleanupBuffers();
+    free(sphereVerticesPositions);
+    free(indices);
+}
+
 void Renderer::drawBuffers(int vertexBufferSize, int indexBufferSize, GLfloat* positions, GLuint* indices) {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
