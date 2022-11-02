@@ -112,6 +112,11 @@ int main(int argc, char **argv) {
         cylinderTransform
             .translate(2.2f, 0, 0)
             .setViewTransform(&viewMatrix);
+        Transform sphereTransform;
+        sphereTransform
+            .scale(1, 1.7f, 1)
+            .translate(-2.2f, 0, 0)
+            .setViewTransform(&viewMatrix);
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -137,6 +142,10 @@ int main(int argc, char **argv) {
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
             shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
             renderer.drawCylinder(18, 2, 0.6);
+
+            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, sphereTransform.getMatrix());
+            shader.setUniform4f("inColor", 0.4f, 0.3f, 0.7f, 1.0f);
+            renderer.drawSphere(18, 8, 0.6);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
