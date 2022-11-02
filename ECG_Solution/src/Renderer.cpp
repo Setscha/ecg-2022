@@ -11,7 +11,7 @@ void Renderer::clear() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::drawCube(float width, float height, float depth) {
+void Renderer::drawCube(const Shader& shader, float width, float height, float depth) {
     // TODO: maybe cache the positions and don't calculate them every frame
 
     float wh = width / 2;
@@ -43,12 +43,13 @@ void Renderer::drawCube(float width, float height, float depth) {
             5, 1, 0
     };
 
+    shader.activate();
     drawBuffers(24, 12, cubeVerticesPositions, indices);
 
     cleanupBuffers();
 }
 
-void Renderer::drawCylinder(int segments, float height, float radius) {
+void Renderer::drawCylinder(const Shader& shader, int segments, float height, float radius) {
     GLfloat* cylinderVerticesPositions = new GLfloat[(2 * segments + 2) * 3];
     double angleIncrease = M_PI * 2 / segments;
     /** segment offset for index array, i.e. where the lower circle positions begin, excluding center*/
@@ -94,6 +95,7 @@ void Renderer::drawCylinder(int segments, float height, float radius) {
         indices[12 * j + 11] = sIOffset + i;
     }
 
+    shader.activate();
     drawBuffers((2 * segments + 2), segments * 4, cylinderVerticesPositions, indices);
 
     cleanupBuffers();
@@ -101,7 +103,7 @@ void Renderer::drawCylinder(int segments, float height, float radius) {
     free(indices);
 }
 
-void Renderer::drawSphere(int longSegments, int latSegments, float radius) {
+void Renderer::drawSphere(const Shader& shader, int longSegments, int latSegments, float radius) {
     int vertexCount = (2 + longSegments * (latSegments - 1));
     int indicesCount = (2 * longSegments * (latSegments - 1));
     double latAngleIncrease = M_PI / latSegments;
@@ -164,6 +166,7 @@ void Renderer::drawSphere(int longSegments, int latSegments, float radius) {
         }
     }
 
+    shader.activate();
     drawBuffers(vertexCount, indicesCount, sphereVerticesPositions, indices);
 
     cleanupBuffers();

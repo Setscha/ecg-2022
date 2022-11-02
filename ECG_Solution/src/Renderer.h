@@ -13,9 +13,9 @@ private:
 public:
     void clear() const;
     void drawTeapot(const Shader& shader) const;
-    void drawCube(float width, float height, float depth);
-    void drawCylinder(int segments, float height, float radius);
-    void drawSphere(int longSegments, int latSegments, float radius);
+    void drawCube(const Shader& shader, float width, float height, float depth);
+    void drawCylinder(const Shader& shader, int segments, float height, float radius);
+    void drawSphere(const Shader& shader, int longSegments, int latSegments, float radius);
     void drawBuffers(int vertexBufferSize, int indexBufferSize, GLfloat* positions, GLuint* indices);
     void cleanupBuffers() const;
 };
