@@ -7,6 +7,10 @@ set(Header_Files
     "src/Renderer.h"
     "src/Shader.h"
     "src/Transform.h"
+    "src/Drawables/Drawable.h"
+    "src/Drawables/Sphere.h"
+    "src/Drawables/Cube.h"
+    "src/Drawables/Cylinder.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
@@ -16,6 +20,9 @@ set(Source_Files
     "src/Renderer.cpp"
     "src/Shader.cpp"
     "src/Transform.cpp"
+    "src/Drawables/Sphere.cpp"
+    "src/Drawables/Cube.cpp"
+    "src/Drawables/Cylinder.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(All_Sources ${Header_Files} ${Source_Files})

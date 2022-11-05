@@ -16,6 +16,9 @@
 #include "Shader.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "Drawables/Sphere.h"
+#include "Drawables/Cylinder.h"
+#include "Drawables/Cube.h"
 
 /* --------------------------------------------- */
 // Prototypes
@@ -90,7 +93,7 @@ int main(int argc, char **argv) {
     }
 
     /* --------------------------------------------- */
-    // Initialize scene and render loop
+    // Initialize scene and draw loop
     /* --------------------------------------------- */
     {
         glClearColor(1, 1, 1, 1);
@@ -103,6 +106,10 @@ int main(int argc, char **argv) {
         Renderer renderer;
         Shader shader("assets/shaders/vertex.shader", "assets/shaders/fragment.shader");
         glm::mat4 viewMatrix;
+
+        Cube cube(1.3f, 2.0f, 1.3f);
+        Sphere sphere(18, 8, 0.6f);
+        Cylinder cylinder(18, 2.0f, 0.6f);
 
         Transform cubeTransform;
         cubeTransform
@@ -137,15 +144,15 @@ int main(int argc, char **argv) {
 
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
             shader.setUniform4f("inColor", 0.7f, 0.1f, 0.2f, 1.0f);
-            renderer.drawCube(shader, 1.3, 2, 1.3);
+            renderer.renderDrawable(shader, cube);
 
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
             shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
-            renderer.drawCylinder(shader, 18, 2, 0.6);
+            renderer.renderDrawable(shader, cylinder);
 
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, sphereTransform.getMatrix());
             shader.setUniform4f("inColor", 0.4f, 0.3f, 0.7f, 1.0f);
-            renderer.drawSphere(shader, 18, 8, 0.6);
+            renderer.renderDrawable(shader, sphere);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */

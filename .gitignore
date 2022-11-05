@@ -24,3 +24,5 @@
 # whitelist source code
 !/ECG*/src/*.cpp
 !/ECG*/src/*.h
+!/ECG*/src/Drawables/*.h
+!/ECG*/src/Drawables/*.cpp
