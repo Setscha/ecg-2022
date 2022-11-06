@@ -19,6 +19,7 @@
 #include "Drawables/Sphere.h"
 #include "Drawables/Cylinder.h"
 #include "Drawables/Cube.h"
+#include "Drawables/Torus.h"
 
 /* --------------------------------------------- */
 // Prototypes
@@ -110,6 +111,7 @@ int main(int argc, char **argv) {
         Cube cube(1.3f, 2.0f, 1.3f);
         Sphere sphere(18, 8, 0.6f);
         Cylinder cylinder(18, 2.0f, 0.6f);
+        Torus torus(4.5f, 0.5f, 32, 8);
 
         Transform cubeTransform;
         cubeTransform
@@ -123,6 +125,10 @@ int main(int argc, char **argv) {
         sphereTransform
             .scale(1, 1.7f, 1)
             .translate(-2.2f, 0, 0)
+            .setViewTransform(&viewMatrix);
+        Transform torusTransform;
+        torusTransform
+            .scale(1, 0.6f, 1)
             .setViewTransform(&viewMatrix);
 
         while (!glfwWindowShouldClose(window)) {
@@ -153,6 +159,10 @@ int main(int argc, char **argv) {
             shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, sphereTransform.getMatrix());
             shader.setUniform4f("inColor", 0.4f, 0.3f, 0.7f, 1.0f);
             renderer.renderDrawable(shader, sphere);
+
+            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, torusTransform.getMatrix());
+            shader.setUniform4f("inColor", 1.0f, 0.3f, 0.0f, 1.0f);
+            renderer.renderDrawable(shader, torus);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
