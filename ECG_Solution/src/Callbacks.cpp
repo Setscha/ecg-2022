@@ -7,23 +7,21 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
-        GLint polygonMode;
-        glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
-
-        if (polygonMode == GL_FILL) {
+        if (currentPolygonMode == GL_FILL) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        } else if (polygonMode == GL_LINE) {
+            currentPolygonMode = GL_LINE;
+        } else if (currentPolygonMode == GL_LINE) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            currentPolygonMode = GL_FILL;
         }
     }
     if (key == GLFW_KEY_F2 && action == GLFW_PRESS) {
-        GLint backfaceCulling;
-        glGetIntegerv(GL_CULL_FACE, &backfaceCulling);
-
-        if (backfaceCulling == GL_TRUE) {
+        if (isBackfaceCullingActive == GL_TRUE) {
             glDisable(GL_CULL_FACE);
+            isBackfaceCullingActive = GL_FALSE;
         } else {
             glEnable(GL_CULL_FACE);
+            isBackfaceCullingActive = GL_TRUE;
         }
     }
 }
