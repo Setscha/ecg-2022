@@ -5,8 +5,9 @@
 #include <cmath>
 
 class Sphere: public Drawable {
+private:
+    void generateSphere(int longSegments, int latSegments, float radius);
 public:
     Sphere(int longSegments, int latSegments, float radius);
-    void generateSphere(int longSegments, int latSegments, float radius);
 };
 

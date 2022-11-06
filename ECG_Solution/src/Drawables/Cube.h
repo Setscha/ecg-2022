@@ -5,7 +5,8 @@
 #include <cmath>
 
 class Cube: public Drawable {
+private:
+    void generateCube(float width, float height, float depth);
 public:
     Cube(float width, float height, float depth);
-    void generateCube(float width, float height, float depth);
 };
