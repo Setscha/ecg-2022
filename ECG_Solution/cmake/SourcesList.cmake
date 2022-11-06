@@ -11,6 +11,7 @@ set(Header_Files
     "src/Drawables/Sphere.h"
     "src/Drawables/Cube.h"
     "src/Drawables/Cylinder.h"
+    "src/Drawables/Torus.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
@@ -23,6 +24,7 @@ set(Source_Files
     "src/Drawables/Sphere.cpp"
     "src/Drawables/Cube.cpp"
     "src/Drawables/Cylinder.cpp"
+    "src/Drawables/Torus.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(All_Sources ${Header_Files} ${Source_Files})
