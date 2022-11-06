@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Transform.h"
 
 glm::mat4 Transform::getMatrix() const {

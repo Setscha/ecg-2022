@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Renderer.h"
 
 void Renderer::drawTeapot(const Shader& shader) const {

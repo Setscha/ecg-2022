@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Camera.h"
 
 glm::mat4 Camera::getCameraTransform(glm::vec3 g, glm::vec3 e, glm::vec3 t) {
