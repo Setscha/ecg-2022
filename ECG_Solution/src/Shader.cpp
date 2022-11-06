@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Shader.h"
 
 void Shader::activate() const {
