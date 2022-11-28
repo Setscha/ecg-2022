@@ -17,7 +17,6 @@ public:
     void draw() const {
         glEnableVertexAttribArray(0);
         glBindVertexArray(vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glDrawElements(GL_TRIANGLES, iboSize, GL_UNSIGNED_INT, nullptr);
         glDisableVertexAttribArray(0);
     }
