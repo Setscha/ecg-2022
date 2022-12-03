@@ -75,7 +75,7 @@ glm::mat4 Camera::getOrbitCameraTransform() {
         right = normalize(cross(direction, vec3(0.0, 1.0, 0.0)));
         up = normalize(cross(right, direction));
 
-        vec3 pos = (-direction * distance) + targetPosition;
+        pos = (-direction * distance) + targetPosition;
 
         return Camera::getCameraTransform(direction, pos, up);
     }

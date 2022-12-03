@@ -20,6 +20,9 @@
 #include "Drawables/Cylinder.h"
 #include "Drawables/Cube.h"
 #include "Drawables/Torus.h"
+#include "Vertex.h"
+#include "Lights/PointLight.h"
+#include "Lights/DirectionalLight.h"
 
 /* --------------------------------------------- */
 // Prototypes
@@ -105,31 +108,25 @@ int main(int argc, char **argv) {
         Camera camera(window, camera_fov, (double)window_width / (double)window_height, camera_near, camera_far);
 
         Renderer renderer;
-        Shader shader("assets/shaders/vertex.shader", "assets/shaders/fragment.shader");
         glm::mat4 viewMatrix;
 
-        Cube cube(1.3f, 2.0f, 1.3f);
-        Sphere sphere(18, 8, 0.6f);
-        Cylinder cylinder(18, 2.0f, 0.6f);
-        Torus torus(4.5f, 0.5f, 32, 8);
+        Cube cube(1.5f, 1.5f, 1.5f);
+        Sphere sphere1(32, 16, 1.0f);
+        Sphere sphere2(32, 16, 1.0f);
+
+        PointLight pointLight1({0, 0, 0}, {1, 1, 1}, {1.0f, 0.4f, 0.1f});
+        DirectionalLight directionalLight1({0, -1, -1}, {0.8f, 0.8f, 0.8f});
+
+        Shader cubeShader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
+        Shader sphere1Shader("assets/shaders/phong.vsh", "assets/shaders/phong.fsh");
+        Shader sphere2Shader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
 
         Transform cubeTransform;
-        cubeTransform
-            .rotateY(45)
-            .setViewTransform(&viewMatrix);
-        Transform cylinderTransform;
-        cylinderTransform
-            .translate(2.2f, 0, 0)
-            .setViewTransform(&viewMatrix);
-        Transform sphereTransform;
-        sphereTransform
-            .scale(1, 1.7f, 1)
-            .translate(-2.2f, 0, 0)
-            .setViewTransform(&viewMatrix);
-        Transform torusTransform;
-        torusTransform
-            .scale(1, 0.6f, 1)
-            .setViewTransform(&viewMatrix);
+        cubeTransform.translate(-1.2f, -1.5f, 0);
+        Transform sphere1Transform;
+        sphere1Transform.translate(-1.2f, 1.0f, 0);
+        Transform sphere2Transform;
+        sphere2Transform.translate(1.2f, 1.0f, 0);
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -148,21 +145,41 @@ int main(int argc, char **argv) {
 
             viewMatrix = camera.getTransformMatrix();
 
-            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
-            shader.setUniform4f("inColor", 0.7f, 0.1f, 0.2f, 1.0f);
-            renderer.renderDrawable(shader, cube);
+            cubeShader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
+            cubeShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
+            cubeShader.setUniform4f("inColor", 1.0f, 0.0f, 0.0f, 1.0f);
+            cubeShader.setUniform1f("ka", 0.05f);
+            cubeShader.setUniform1f("kd", 0.8f);
+            cubeShader.setUniform1f("ks", 0.5f);
+            cubeShader.setUniform1i("alpha", 5);
+            cubeShader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
+            cubeShader.setUniformPointLight("pointLight", pointLight1);
+            cubeShader.setUniformDirectionalLight("directionalLight", directionalLight1);
+            renderer.renderDrawable(cubeShader, cube);
 
-            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
-            shader.setUniform4f("inColor", 0.2f, 0.6f, 0.4f, 1.0f);
-            renderer.renderDrawable(shader, cylinder);
+            sphere1Shader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
+            sphere1Shader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere1Transform.getMatrix());
+            sphere1Shader.setUniform4f("inColor", 0.0f, 1.0f, 0.0f, 1.0f);
+            sphere1Shader.setUniform1f("ka", 0.1f);
+            sphere1Shader.setUniform1f("kd", 0.9f);
+            sphere1Shader.setUniform1f("ks", 0.3f);
+            sphere1Shader.setUniform1i("alpha", 10);
+            sphere1Shader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
+            sphere1Shader.setUniformPointLight("pointLight", pointLight1);
+            sphere1Shader.setUniformDirectionalLight("directionalLight", directionalLight1);
+            renderer.renderDrawable(sphere1Shader, sphere1);
 
-            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, sphereTransform.getMatrix());
-            shader.setUniform4f("inColor", 0.4f, 0.3f, 0.7f, 1.0f);
-            renderer.renderDrawable(shader, sphere);
-
-            shader.setUniformMatrix4fv("transformMatrix", 1, GL_FALSE, torusTransform.getMatrix());
-            shader.setUniform4f("inColor", 1.0f, 0.3f, 0.0f, 1.0f);
-            renderer.renderDrawable(shader, torus);
+            sphere2Shader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
+            sphere2Shader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere2Transform.getMatrix());
+            sphere2Shader.setUniform4f("inColor", 1.0f, 0.0f, 0.0f, 1.0f);
+            sphere2Shader.setUniform1f("ka", 0.1f);
+            sphere2Shader.setUniform1f("kd", 0.9f);
+            sphere2Shader.setUniform1f("ks", 0.3f);
+            sphere2Shader.setUniform1i("alpha", 10);
+            sphere2Shader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
+            sphere2Shader.setUniformPointLight("pointLight", pointLight1);
+            sphere2Shader.setUniformDirectionalLight("directionalLight", directionalLight1);
+            renderer.renderDrawable(sphere2Shader, sphere2);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */

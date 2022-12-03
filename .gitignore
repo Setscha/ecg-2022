@@ -26,3 +26,5 @@
 !/ECG*/src/*.h
 !/ECG*/src/Drawables/*.h
 !/ECG*/src/Drawables/*.cpp
+!/ECG*/src/Lights/*.h
+!/ECG*/src/Lights/*.cpp

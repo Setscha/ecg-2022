@@ -16,6 +16,7 @@ private:
     double pxpos = -1;
     double pypos = -1;
 public:
+    glm::vec3 pos;
     Camera(GLFWwindow* window, double fov, double aspect_ratio, double near, double far);
     void registerMovementCallbacks(GLFWwindow *window);
     static glm::mat4 getCameraTransform(glm::vec3 g, glm::vec3 e, glm::vec3 t);
