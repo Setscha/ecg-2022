@@ -1,4 +1,5 @@
 #include "Sphere.h"
+#include "../Vertex.h"
 
 Sphere::Sphere(int longSegments, int latSegments, float radius) {
     generateSphere(longSegments, latSegments, radius);
@@ -10,24 +11,18 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
     double latAngleIncrease = M_PI / latSegments;
     double longAngleIncrease = M_PI * 2 / longSegments;
 
-    GLfloat* verticesPositions = new GLfloat[vertexCount * 3];
+    Vertex* vertices = new Vertex[vertexCount];
 
-    verticesPositions[0] = 0;
-    verticesPositions[1] = radius;
-    verticesPositions[2] = 0;
-    verticesPositions[vertexCount * 3 - 3] = 0;
-    verticesPositions[vertexCount * 3 - 2] = -radius;
-    verticesPositions[vertexCount * 3 - 1] = 0;
+    vertices[0] = {{0, radius, 0}, {0, 1, 0}};
+    vertices[vertexCount - 1] = {{0, -radius, 0}, {0, -1, 0}};
 
     for (int i = 1; i < latSegments; ++i) {
         double latSin = sin(latAngleIncrease * i);
         double latCos = cos(latAngleIncrease * i);
         for (int j = 0; j < longSegments; ++j) {
-            int latOffset = longSegments * (i - 1) * 3;
-            int longOffset = 3 * j;
-            verticesPositions[3 + latOffset + longOffset] = radius * latSin * cos(longAngleIncrease * j);
-            verticesPositions[3 + latOffset + longOffset + 1] = radius * latCos;
-            verticesPositions[3 + latOffset + longOffset + 2] = radius * latSin * sin(longAngleIncrease * j);
+            int latOffset = longSegments * (i - 1);
+            vertices[1 + latOffset + j] = {{radius * latSin * cos(longAngleIncrease * j), radius * latCos, radius * latSin * sin(longAngleIncrease * j)}};
+            vertices[1 + latOffset + j].normal = glm::normalize(vertices[1 + latOffset + j].position);
         }
     }
 
@@ -74,10 +69,12 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(GLfloat), verticesPositions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
 
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -85,6 +82,6 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
 
     glDisableVertexAttribArray(0);
 
-    free(verticesPositions);
+    free(vertices);
     free(indices);
 }

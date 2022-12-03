@@ -12,6 +12,11 @@ set(Header_Files
     "src/Drawables/Cube.h"
     "src/Drawables/Cylinder.h"
     "src/Drawables/Torus.h"
+    "src/Vertex.h"
+    "src/Lights/Light.h"
+    "src/Lights/PointLight.h"
+    "src/Lights/DirectionalLight.h"
+    "src/ShaderFactory.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
@@ -25,6 +30,9 @@ set(Source_Files
     "src/Drawables/Cube.cpp"
     "src/Drawables/Cylinder.cpp"
     "src/Drawables/Torus.cpp"
+    "src/Lights/PointLight.cpp"
+    "src/Lights/DirectionalLight.cpp"
+    "src/ShaderFactory.cpp "
 )
 source_group("Source Files" FILES ${Source_Files})
 set(All_Sources ${Header_Files} ${Source_Files})

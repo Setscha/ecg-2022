@@ -1,6 +1,7 @@
 #include "Transform.h"
 
 glm::mat4 Transform::getMatrix() const {
+    return transformMatrix;
     if (viewTransform == nullptr) {
         return transformMatrix;
     }
