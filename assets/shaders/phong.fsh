@@ -30,6 +30,7 @@ uniform PointLight pointLight;
 uniform DirectionalLight directionalLight;
 
 void main() {
+    vec3 normal = normalize(fragNormal);
     // Ambient light
     vec3 lightIntensity = vec3(1, 1, 1) * ka;
 
@@ -37,16 +38,16 @@ void main() {
     // Directional vector to light source
     vec3 L = normalize(pointLight.position - vec3(fragPos));
     // Reflection
-    vec3 R = 2 * dot(L, fragNormal) * fragNormal - L;
+    vec3 R = 2 * dot(L, normal) * normal - L;
     // Directional vector to viewer
     vec3 V = normalize(eyePos - vec3(fragPos));
     float attenuationFactor = pointLight.attenuation.x + pointLight.attenuation.y * distance(pointLight.position, vec3(fragPos)) + pointLight.attenuation.z * pow(distance(pointLight.position, vec3(fragPos)), 2);
-    lightIntensity += pointLight.intensity / attenuationFactor * kd * max(0, dot(L, fragNormal)) + pointLight.intensity / attenuationFactor * ks * pow(max(0, dot(R, V)), alpha);
+    lightIntensity += pointLight.intensity / attenuationFactor * kd * max(0, dot(L, normal)) + pointLight.intensity / attenuationFactor * ks * pow(max(0, dot(R, V)), alpha);
 
     // DirectionalLight
     L = normalize(-directionalLight.direction);
-    R = 2 * dot(L, fragNormal) * fragNormal - L;
-    lightIntensity += directionalLight.intensity * kd * max(0, dot(L, fragNormal)) + directionalLight.intensity * ks * pow(max(0, dot(R, V)), alpha);
+    R = 2 * dot(L, normal) * normal - L;
+    lightIntensity += directionalLight.intensity * kd * max(0, dot(L, normal)) + directionalLight.intensity * ks * pow(max(0, dot(R, V)), alpha);
 
     color = inColor * vec4(lightIntensity, 1.0f);
 }
