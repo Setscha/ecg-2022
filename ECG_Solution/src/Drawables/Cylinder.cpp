@@ -1,4 +1,5 @@
 #include "Cylinder.h"
+#include "../Vertex.h"
 
 Cylinder::Cylinder(int segments, float height, float radius) {
     generateCylinder(segments, height, radius);
@@ -6,30 +7,23 @@ Cylinder::Cylinder(int segments, float height, float radius) {
 
 void Cylinder::generateCylinder(int segments, float height, float radius) {
     int indicesCount = segments * 4;
-    int vertexCount = (2 * segments + 2);
-    GLfloat* verticesPositions = new GLfloat[vertexCount * 3];
+    int vertexCount = 2 * (2 * segments + 2) - 2;
+    Vertex* vertices = new Vertex[vertexCount];
     double angleIncrease = M_PI * 2 / segments;
     /** segment offset for index array, i.e. where the lower circle positions begin, excluding center*/
     int sIOffset = segments + 1;
-    /** segment offset in position array, 3 * sIOffset */
-    int sOffset = sIOffset * 3;
+    int fOffset = (2 * segments + 2) - 1;
 
-    verticesPositions[0] = 0;
-    verticesPositions[1] = height / 2;
-    verticesPositions[2] = 0;
-    verticesPositions[sOffset + 0] = 0;
-    verticesPositions[sOffset + 1] = -height / 2;
-    verticesPositions[sOffset + 2] = 0;
+    vertices[0] = {{0, height / 2, 0}, {0, 1, 0}};
+    vertices[sIOffset] = {{0, -height / 2, 0}, {0, -1, 0}};
 
     for (int i = 1; i <= segments; ++i) {
         // Top circle
-        verticesPositions[3 * i] = radius * sin(angleIncrease * i);
-        verticesPositions[3 * i + 1] = height / 2;
-        verticesPositions[3 * i + 2] = radius * cos(angleIncrease * i);
+        vertices[i] = {{radius * sin(angleIncrease * i), height / 2, radius * cos(angleIncrease * i)}, {0, 1, 0}};
+        vertices[fOffset + i] = {vertices[i].position, glm::normalize(glm::vec3(vertices[i].position.x, 0, vertices[i].position.z))};
         // Bottom circle
-        verticesPositions[sOffset + 3 * i] = verticesPositions[i * 3];
-        verticesPositions[sOffset + 3 * i + 1] = -height / 2;
-        verticesPositions[sOffset + 3 * i + 2] = verticesPositions[i * 3 + 2];
+        vertices[sIOffset + i] = {{vertices[i].position.x, -height / 2, vertices[i].position.z}, {0, -1, 0}};
+        vertices[fOffset - 1 + sIOffset + i] = {vertices[sIOffset + i].position, vertices[fOffset + i].normal};
     }
 
     GLuint* indices = new GLuint[indicesCount * 3];
@@ -39,13 +33,13 @@ void Cylinder::generateCylinder(int segments, float height, float radius) {
         indices[12 * j + 1] = 1 + (i % segments);
         indices[12 * j + 2] = 0;
         // Side quad
-        indices[12 * j + 3] = 1 + (i % segments);
-        indices[12 * j + 4] = i;
-        indices[12 * j + 5] = sIOffset + i;
+        indices[12 * j + 3] = fOffset + 1 + (i % segments);
+        indices[12 * j + 4] = fOffset + i;
+        indices[12 * j + 5] = fOffset - 1 + sIOffset + i;
 
-        indices[12 * j + 6] = sIOffset + i;
-        indices[12 * j + 7] = sIOffset + 1 + (i % segments);
-        indices[12 * j + 8] = 1 + (i % segments);
+        indices[12 * j + 6] = fOffset - 1 + sIOffset + i;
+        indices[12 * j + 7] = fOffset - 1 + sIOffset + 1 + (i % segments);
+        indices[12 * j + 8] = fOffset + 1 + (i % segments);
         // Bottom triangle
         indices[12 * j + 9] = sIOffset;
         indices[12 * j + 10] = sIOffset + 1 + (i % segments);
@@ -59,10 +53,12 @@ void Cylinder::generateCylinder(int segments, float height, float radius) {
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * 3 * sizeof(GLfloat), verticesPositions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
 
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -70,6 +66,6 @@ void Cylinder::generateCylinder(int segments, float height, float radius) {
 
     glDisableVertexAttribArray(0);
 
-    free(verticesPositions);
+    free(vertices);
     free(indices);
 }

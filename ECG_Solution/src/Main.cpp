@@ -113,6 +113,7 @@ int main(int argc, char **argv) {
         Cube cube(1.5f, 1.5f, 1.5f);
         Sphere sphere1(32, 16, 1.0f);
         Sphere sphere2(32, 16, 1.0f);
+        Cylinder cylinder(16, 1.5f, 1.0f);
 
         PointLight pointLight1({0, 0, 0}, {1, 1, 1}, {1.0f, 0.4f, 0.1f});
         DirectionalLight directionalLight1({0, -1, -1}, {0.8f, 0.8f, 0.8f});
@@ -120,6 +121,7 @@ int main(int argc, char **argv) {
         Shader cubeShader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
         Shader sphere1Shader("assets/shaders/phong.vsh", "assets/shaders/phong.fsh");
         Shader sphere2Shader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
+        Shader cylinderShader("assets/shaders/phong.vsh", "assets/shaders/phong.fsh");
 
         Transform cubeTransform;
         cubeTransform.translate(-1.2f, -1.5f, 0);
@@ -127,6 +129,8 @@ int main(int argc, char **argv) {
         sphere1Transform.translate(-1.2f, 1.0f, 0);
         Transform sphere2Transform;
         sphere2Transform.translate(1.2f, 1.0f, 0);
+        Transform cylinderTransform;
+        cylinderTransform.translate(1.2f, -1.5f, 0);
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -180,6 +184,18 @@ int main(int argc, char **argv) {
             sphere2Shader.setUniformPointLight("pointLight", pointLight1);
             sphere2Shader.setUniformDirectionalLight("directionalLight", directionalLight1);
             renderer.renderDrawable(sphere2Shader, sphere2);
+
+            cylinderShader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
+            cylinderShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
+            cylinderShader.setUniform4f("inColor", 0.0f, 1.0f, 0.0f, 1.0f);
+            cylinderShader.setUniform1f("ka", 0.05f);
+            cylinderShader.setUniform1f("kd", 0.8f);
+            cylinderShader.setUniform1f("ks", 0.5f);
+            cylinderShader.setUniform1i("alpha", 5);
+            cylinderShader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
+            cylinderShader.setUniformPointLight("pointLight", pointLight1);
+            cylinderShader.setUniformDirectionalLight("directionalLight", directionalLight1);
+            renderer.renderDrawable(cylinderShader, cylinder);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */
