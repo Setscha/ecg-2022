@@ -32,7 +32,7 @@ set(Source_Files
     "src/Drawables/Torus.cpp"
     "src/Lights/PointLight.cpp"
     "src/Lights/DirectionalLight.cpp"
-    "src/ShaderFactory.cpp "
+    "src/ShaderFactory.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(All_Sources ${Header_Files} ${Source_Files})

@@ -64,6 +64,6 @@ void Torus::generateTorus(float R, float r, int segments, int crossSegments) {
 
     glDisableVertexAttribArray(0);
 
-    free(verticesPositions);
-    free(indices);
+    delete[] verticesPositions;
+    delete[] indices;
 }

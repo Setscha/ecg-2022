@@ -66,6 +66,6 @@ void Cylinder::generateCylinder(int segments, float height, float radius) {
 
     glDisableVertexAttribArray(0);
 
-    free(vertices);
-    free(indices);
+    delete[] vertices;
+    delete[] indices;
 }
