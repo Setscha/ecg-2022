@@ -102,6 +102,6 @@ void Cube::generateCube(float width, float height, float depth) {
 
     glDisableVertexAttribArray(0);
 
-    free(vertices);
-    free(indices);
+    delete[] vertices;
+    delete[] indices;
 }

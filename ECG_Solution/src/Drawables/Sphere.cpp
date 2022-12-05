@@ -82,6 +82,6 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
 
     glDisableVertexAttribArray(0);
 
-    free(vertices);
-    free(indices);
+    delete[] vertices;
+    delete[] indices;
 }
