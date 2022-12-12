@@ -1,11 +1,9 @@
-#version 330 core
+#version 450 core
 
-in vec3 lightIntensity;
+in vec4 fragCol;
 
 out vec4 color;
 
-uniform vec4 inColor;
-
 void main() {
-    color = inColor * vec4(lightIntensity, 1.0f);
+    color = fragCol;
 }
