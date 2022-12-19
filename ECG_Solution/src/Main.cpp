@@ -23,6 +23,7 @@
 #include "Vertex.h"
 #include "Lights/PointLight.h"
 #include "Lights/DirectionalLight.h"
+#include "ShaderManager.h"
 
 /* --------------------------------------------- */
 // Prototypes
@@ -116,12 +117,24 @@ int main(int argc, char **argv) {
         Cylinder cylinder(16, 1.5f, 1.0f);
 
         PointLight pointLight1({0, 0, 0}, {1, 1, 1}, {1.0f, 0.4f, 0.1f});
+        PointLight pointLight2({1.2, 0, 0}, {0.2, 0.3, 0.4}, {1.0f, 0.4f, 0.1f});
+        PointLight pointLight3({-1.2, 0, 0}, {0.4, 0.4, 0.3}, {1.0f, 0.4f, 0.1f});
         DirectionalLight directionalLight1({0, -1, -1}, {0.8f, 0.8f, 0.8f});
+        DirectionalLight directionalLight2({0, 1, 1}, {0.3f, 0.3f, 0.9f});
+        DirectionalLight directionalLight3({1, -1, 0}, {0.2f, 0.2f, 0.2f});
 
-        Shader cubeShader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
-        Shader sphere1Shader("assets/shaders/phong.vsh", "assets/shaders/phong.fsh");
-        Shader sphere2Shader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
-        Shader cylinderShader("assets/shaders/phong.vsh", "assets/shaders/phong.fsh");
+        ShaderManager shaderManager;
+        shaderManager.addPointLight(pointLight1);
+        shaderManager.addPointLight(pointLight2);
+        shaderManager.addPointLight(pointLight3);
+        shaderManager.addDirectionalLight(directionalLight1);
+        shaderManager.addDirectionalLight(directionalLight2);
+        shaderManager.addDirectionalLight(directionalLight3);
+
+        Shader* cubeShader = shaderManager.createGouraudShader({1.0f, 0.0f, 0.0f, 1.0f}, 0.05f, 0.8f, 0.5f, 5);
+        Shader* sphere1Shader = shaderManager.createPhongShader({0.0f, 1.0f, 0.0f, 1.0f}, 0.1f, 0.9f, 0.3f, 10);
+        Shader* sphere2Shader = shaderManager.createGouraudShader({1.0f, 0.0f, 0.0f, 1.0f}, 0.1f, 0.9f, 0.3f, 10);
+        Shader* cylinderShader = shaderManager.createPhongShader({0.0f, 1.0f, 0.0f, 1.0f}, 0.05f, 0.8f, 0.5f, 5);
 
         Transform cubeTransform;
         cubeTransform.translate(-1.2f, -1.5f, 0);
@@ -131,6 +144,11 @@ int main(int argc, char **argv) {
         sphere2Transform.translate(1.2f, 1.0f, 0);
         Transform cylinderTransform;
         cylinderTransform.translate(1.2f, -1.5f, 0);
+
+        cubeShader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
+        sphere1Shader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere1Transform.getMatrix());
+        sphere2Shader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere2Transform.getMatrix());
+        cylinderShader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -147,55 +165,12 @@ int main(int argc, char **argv) {
                 }
             #endif
 
-            viewMatrix = camera.getTransformMatrix();
+            shaderManager.updateCameraValues(camera);
 
-            cubeShader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
-            cubeShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
-            cubeShader.setUniform4f("inColor", 1.0f, 0.0f, 0.0f, 1.0f);
-            cubeShader.setUniform1f("ka", 0.05f);
-            cubeShader.setUniform1f("kd", 0.8f);
-            cubeShader.setUniform1f("ks", 0.5f);
-            cubeShader.setUniform1i("alpha", 5);
-            cubeShader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
-            cubeShader.setUniformPointLight("pointLight", pointLight1);
-            cubeShader.setUniformDirectionalLight("directionalLight", directionalLight1);
-            renderer.renderDrawable(cubeShader, cube);
-
-            sphere1Shader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
-            sphere1Shader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere1Transform.getMatrix());
-            sphere1Shader.setUniform4f("inColor", 0.0f, 1.0f, 0.0f, 1.0f);
-            sphere1Shader.setUniform1f("ka", 0.1f);
-            sphere1Shader.setUniform1f("kd", 0.9f);
-            sphere1Shader.setUniform1f("ks", 0.3f);
-            sphere1Shader.setUniform1i("alpha", 10);
-            sphere1Shader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
-            sphere1Shader.setUniformPointLight("pointLight", pointLight1);
-            sphere1Shader.setUniformDirectionalLight("directionalLight", directionalLight1);
-            renderer.renderDrawable(sphere1Shader, sphere1);
-
-            sphere2Shader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
-            sphere2Shader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere2Transform.getMatrix());
-            sphere2Shader.setUniform4f("inColor", 1.0f, 0.0f, 0.0f, 1.0f);
-            sphere2Shader.setUniform1f("ka", 0.1f);
-            sphere2Shader.setUniform1f("kd", 0.9f);
-            sphere2Shader.setUniform1f("ks", 0.3f);
-            sphere2Shader.setUniform1i("alpha", 10);
-            sphere2Shader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
-            sphere2Shader.setUniformPointLight("pointLight", pointLight1);
-            sphere2Shader.setUniformDirectionalLight("directionalLight", directionalLight1);
-            renderer.renderDrawable(sphere2Shader, sphere2);
-
-            cylinderShader.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, viewMatrix);
-            cylinderShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
-            cylinderShader.setUniform4f("inColor", 0.0f, 1.0f, 0.0f, 1.0f);
-            cylinderShader.setUniform1f("ka", 0.05f);
-            cylinderShader.setUniform1f("kd", 0.8f);
-            cylinderShader.setUniform1f("ks", 0.5f);
-            cylinderShader.setUniform1i("alpha", 5);
-            cylinderShader.setUniform3f("eyePos", camera.pos.x, camera.pos.y, camera.pos.z);
-            cylinderShader.setUniformPointLight("pointLight", pointLight1);
-            cylinderShader.setUniformDirectionalLight("directionalLight", directionalLight1);
-            renderer.renderDrawable(cylinderShader, cylinder);
+            renderer.renderDrawable(*cubeShader, cube);
+            renderer.renderDrawable(*sphere1Shader, sphere1);
+            renderer.renderDrawable(*sphere2Shader, sphere2);
+            renderer.renderDrawable(*cylinderShader, cylinder);
 
             glfwSwapBuffers(window);
             /* Gitlab CI automatic testing */

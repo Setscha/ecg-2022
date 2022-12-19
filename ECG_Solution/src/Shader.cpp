@@ -79,22 +79,26 @@ void Shader::setUniformMatrix4fv(const std::string &name, int size, GLboolean tr
     glUniformMatrix4fv(getUniformLocation(name), size, transposed, matrix);
 }
 
-void Shader::setUniformPointLight(const std::string& name, PointLight pointLight) {
+void Shader::addUniformPointLight(const std::string& name, PointLight pointLight) {
     activate();
-    GLint loc = getUniformLocation(name + ".position");
+    GLint loc = getUniformLocation(name + "[" + std::to_string(pointLights) + "].position");
     glUniform3f(loc, pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
-    loc = getUniformLocation(name + ".intensity");
+    loc = getUniformLocation(name + "[" + std::to_string(pointLights) + "].intensity");
     glUniform3f(loc, pointLight.getIntensity().r, pointLight.getIntensity().g, pointLight.getIntensity().b);
-    loc = getUniformLocation(name + ".attenuation");
+    loc = getUniformLocation(name + "[" + std::to_string(pointLights) + "].attenuation");
     glUniform3f(loc, pointLight.getAttenuation().x, pointLight.getAttenuation().y, pointLight.getAttenuation().z);
+    pointLights++;
+    setUniform1i("amountOfPointLights", pointLights);
 }
 
-void Shader::setUniformDirectionalLight(const std::string& name, DirectionalLight directionalLight) {
+void Shader::addUniformDirectionalLight(const std::string& name, DirectionalLight directionalLight) {
     activate();
-    GLint loc = getUniformLocation(name + ".direction");
+    GLint loc = getUniformLocation(name + "[" + std::to_string(directionalLights) + "].direction");
     glUniform3f(loc, directionalLight.getDirection().x, directionalLight.getDirection().y, directionalLight.getDirection().z);
-    loc = getUniformLocation(name + ".intensity");
+    loc = getUniformLocation(name  + "[" + std::to_string(directionalLights) + "].intensity");
     glUniform3f(loc, directionalLight.getIntensity().r, directionalLight.getIntensity().g, directionalLight.getIntensity().b);
+    directionalLights++;
+    setUniform1i("amountOfDirectionalLights", directionalLights);
 }
 
 GLint Shader::getUniformLocation(const std::string& name) {
