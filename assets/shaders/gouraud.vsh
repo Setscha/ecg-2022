@@ -1,5 +1,7 @@
 #version 450 core
 
+const int MAX_LIGHTS = 16;
+
 struct PointLight {
     vec3 position;
     vec3 intensity;
@@ -27,19 +29,63 @@ uniform float ks;
 // specular factor
 uniform int alpha;
 uniform vec3 eyePos;
-uniform PointLight pointLight;
-uniform DirectionalLight directionalLight;
+uniform PointLight pointLight[MAX_LIGHTS];
+uniform int amountOfPointLights;
+uniform DirectionalLight directionalLight[MAX_LIGHTS];
+uniform int amountOfDirectionalLights;
 uniform vec4 inColor;
 
+vec3 calculateDiffuseFromDirectionalLight(DirectionalLight directionalLight);
+vec3 calculateSpecularFromDirectionalLight(DirectionalLight directionalLight);
+vec3 calculateDiffuseFromPointLight(PointLight pointLight);
+vec3 calculateSpecularFromPointLight(PointLight pointLight);
+
+vec4 vertexPos;
+
 void main() {
-    vec4 vertexPos = modelMatrix * vec4(position, 1.0);
+    vertexPos = modelMatrix * vec4(position, 1.0);
     gl_Position = viewMatrix * vertexPos;
 
     // Ambient light
     vec3 lightIntensity = vec3(1, 1, 1) * ka;
-    vec3 spec = {0, 0, 0};
+    vec3 specularIntensity = {0, 0, 0};
 
-    // PointLight
+    // Point lights
+    for (int i = 0; i < amountOfPointLights; i++) {
+        lightIntensity += calculateDiffuseFromPointLight(pointLight[i]);
+        specularIntensity += calculateSpecularFromPointLight(pointLight[i]);
+    }
+
+    // Directional lights
+    for (int i = 0; i < amountOfDirectionalLights; i++) {
+        lightIntensity += calculateDiffuseFromDirectionalLight(directionalLight[i]);
+        specularIntensity += calculateSpecularFromDirectionalLight(directionalLight[i]);
+    }
+
+    fragCol = inColor * vec4(lightIntensity, 1.0f) + vec4(specularIntensity, 1.0f);
+}
+
+vec3 calculateDiffuseFromDirectionalLight(DirectionalLight directionalLight) {
+    // Directional vector to light source
+    vec3 L = normalize(-directionalLight.direction);
+    // Reflection
+    vec3 R = 2 * dot(L, normal) * normal - L;
+    // Directional vector to viewer
+    vec3 V = normalize(eyePos - vec3(vertexPos));
+    return directionalLight.intensity * kd * max(0, dot(L, normal));
+}
+
+vec3 calculateSpecularFromDirectionalLight(DirectionalLight directionalLight) {
+    // Directional vector to light source
+    vec3 L = normalize(-directionalLight.direction);
+    // Reflection
+    vec3 R = 2 * dot(L, normal) * normal - L;
+    // Directional vector to viewer
+    vec3 V = normalize(eyePos - vec3(vertexPos));
+    return directionalLight.intensity * ks * pow(max(0, dot(R, V)), alpha);
+}
+
+vec3 calculateDiffuseFromPointLight(PointLight pointLight) {
     // Directional vector to light source
     vec3 L = normalize(pointLight.position - vec3(vertexPos));
     // Reflection
@@ -47,14 +93,15 @@ void main() {
     // Directional vector to viewer
     vec3 V = normalize(eyePos - vec3(vertexPos));
     float attenuationFactor = pointLight.attenuation.x + pointLight.attenuation.y * distance(pointLight.position, vec3(vertexPos)) + pointLight.attenuation.z * pow(distance(pointLight.position, vec3(vertexPos)), 2);
-    lightIntensity += pointLight.intensity / attenuationFactor * kd * max(0, dot(L, normal));
-    spec += pointLight.intensity / attenuationFactor * ks * pow(max(0, dot(R, V)), alpha);
+    return pointLight.intensity / attenuationFactor * kd * max(0, dot(L, normal));
+}
 
-    // DirectionalLight
-    L = normalize(-directionalLight.direction);
-    R = 2 * dot(L, normal) * normal - L;
-    lightIntensity += directionalLight.intensity * kd * max(0, dot(L, normal));
-    spec += directionalLight.intensity * ks * pow(max(0, dot(R, V)), alpha);
-
-    fragCol = inColor * vec4(lightIntensity, 1.0f) + vec4(spec, 1.0f);
+vec3 calculateSpecularFromPointLight(PointLight pointLight) {
+    vec3 L = normalize(pointLight.position - vec3(vertexPos));
+    // Reflection
+    vec3 R = 2 * dot(L, normal) * normal - L;
+    // Directional vector to viewer
+    vec3 V = normalize(eyePos - vec3(vertexPos));
+    float attenuationFactor = pointLight.attenuation.x + pointLight.attenuation.y * distance(pointLight.position, vec3(vertexPos)) + pointLight.attenuation.z * pow(distance(pointLight.position, vec3(vertexPos)), 2);
+    return pointLight.intensity / attenuationFactor * ks * pow(max(0, dot(R, V)), alpha);
 }

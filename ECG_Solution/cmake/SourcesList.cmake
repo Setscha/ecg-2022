@@ -16,7 +16,7 @@ set(Header_Files
     "src/Lights/Light.h"
     "src/Lights/PointLight.h"
     "src/Lights/DirectionalLight.h"
-    "src/ShaderFactory.h"
+    "src/ShaderManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
@@ -32,7 +32,7 @@ set(Source_Files
     "src/Drawables/Torus.cpp"
     "src/Lights/PointLight.cpp"
     "src/Lights/DirectionalLight.cpp"
-    "src/ShaderFactory.cpp"
+    "src/ShaderManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(All_Sources ${Header_Files} ${Source_Files})

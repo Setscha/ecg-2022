@@ -11,6 +11,8 @@
 class Shader {
 private:
     GLuint shader;
+    int pointLights = 0;
+    int directionalLights = 0;
     std::unordered_map<std::string, GLint> uniformLocationMap;
 public:
     Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
@@ -23,7 +25,7 @@ public:
     void setUniform1i(const std::string& name, int v);
     void setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, glm::mat4 matrix);
     void setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, GLfloat* matrix);
-    void setUniformPointLight(const std::string& name, PointLight pointLight);
-    void setUniformDirectionalLight(const std::string& name, DirectionalLight directionalLight);
+    void addUniformPointLight(const std::string& name, PointLight pointLight);
+    void addUniformDirectionalLight(const std::string& name, DirectionalLight directionalLight);
     GLint getUniformLocation(const std::string& name);
 };
