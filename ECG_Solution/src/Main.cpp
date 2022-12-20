@@ -24,6 +24,7 @@
 #include "Lights/PointLight.h"
 #include "Lights/DirectionalLight.h"
 #include "ShaderManager.h"
+#include "Lights/SpotLight.h"
 
 /* --------------------------------------------- */
 // Prototypes
@@ -122,6 +123,9 @@ int main(int argc, char **argv) {
         DirectionalLight directionalLight1({0, -1, -1}, {0.8f, 0.8f, 0.8f});
         DirectionalLight directionalLight2({0, 1, 1}, {0.3f, 0.3f, 0.9f});
         DirectionalLight directionalLight3({1, -1, 0}, {0.2f, 0.2f, 0.2f});
+        SpotLight spotLight1({0, 0, 1}, {0.9f, 0.9f, 0.9f}, {1.2f, 1.0f, -1}, glm::radians(65.0f), {1, 0.4f, 0.1f});
+        SpotLight spotLight2({0, 0, 1}, {0.4f, 0.4f, 0.9f}, {-1.2f, -1.0f, -1}, glm::radians(55.0f), {1, 0.4f, 0.1f});
+        SpotLight spotLight3({1.2f, -3.5f, 0}, {0.4f, 0.8f, 0.2f}, {0, 1.0f, 0}, glm::radians(20.0f), {1, 0.4f, 0.1f});
 
         ShaderManager shaderManager;
         shaderManager.addPointLight(pointLight1);
@@ -130,6 +134,9 @@ int main(int argc, char **argv) {
         shaderManager.addDirectionalLight(directionalLight1);
         shaderManager.addDirectionalLight(directionalLight2);
         shaderManager.addDirectionalLight(directionalLight3);
+        shaderManager.addSpotLight(spotLight1);
+        shaderManager.addSpotLight(spotLight2);
+        shaderManager.addSpotLight(spotLight3);
 
         Shader* cubeShader = shaderManager.createGouraudShader({1.0f, 0.0f, 0.0f, 1.0f}, 0.05f, 0.8f, 0.5f, 5);
         Shader* sphere1Shader = shaderManager.createPhongShader({0.0f, 1.0f, 0.0f, 1.0f}, 0.1f, 0.9f, 0.3f, 10);
