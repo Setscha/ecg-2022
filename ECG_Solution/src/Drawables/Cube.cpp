@@ -14,70 +14,47 @@ void Cube::generateCube(float width, float height, float depth) {
     float hh = height / 2;
     float dh = depth / 2;
 
-    Vertex auxVertex[8];
+    Vertex vertices[24];
 
-    auxVertex[0] = {{-wh, -hh, -dh}};
-    auxVertex[1] = {{-wh, -hh, dh}};
-    auxVertex[2] = {{-wh, hh, -dh}};
-    auxVertex[3] = {{-wh, hh, dh}};
-    auxVertex[4] = {{wh, -hh, -dh}};
-    auxVertex[5] = {{wh, -hh, dh}};
-    auxVertex[6] = {{wh, hh, -dh}};
-    auxVertex[7] = {{wh, hh, dh}};
+    vertices[0] = {{-wh, -hh, -dh}, {-1, 0, 0}};
+    vertices[1] = {{-wh, -hh, -dh}, {0, -1, 0}};
+    vertices[2] = {{-wh, -hh, -dh}, {0, 0, -1}};
+    vertices[3] = {{-wh, -hh, dh}, {-1, 0, 0}};
+    vertices[4] = {{-wh, -hh, dh}, {0, -1, 0}};
+    vertices[5] = {{-wh, -hh, dh}, {0, 0, 1}};
+    vertices[6] = {{-wh, hh, -dh}, {-1, 0, 0}};
+    vertices[7] = {{-wh, hh, -dh}, {0, 1, 0}};
+    vertices[8] = {{-wh, hh, -dh}, {0, 0, -1}};
+    vertices[9] = {{-wh, hh, dh}, {-1, 0, 0}};
+    vertices[10] = {{-wh, hh, dh}, {0, 1, 0}};
+    vertices[11] = {{-wh, hh, dh}, {0, 0, 1}};
+    vertices[12] = {{wh, -hh, -dh}, {1, 0, 0}};
+    vertices[13] = {{wh, -hh, -dh}, {0, -1, 0}};
+    vertices[14] = {{wh, -hh, -dh}, {0, 0, -1}};
+    vertices[15] = {{wh, -hh, dh}, {1, 0, 0}};
+    vertices[16] = {{wh, -hh, dh}, {0, -1, 0}};
+    vertices[17] = {{wh, -hh, dh}, {0, 0, 1}};
+    vertices[18] = {{wh, hh, -dh}, {1, 0, 0}};
+    vertices[19] = {{wh, hh, -dh}, {0, 1, 0}};
+    vertices[20] = {{wh, hh, -dh}, {0, 0, -1}};
+    vertices[21] = {{wh, hh, dh}, {1, 0, 0}};
+    vertices[22] = {{wh, hh, dh}, {0, 1, 0}};
+    vertices[23] = {{wh, hh, dh}, {0, 0, 1}};
 
-    GLuint auxIndices[] = {
-            0, 1, 3,
-            3, 2, 0,
-            1, 5, 7,
-            7, 3, 1,
-            5, 4, 6,
-            6, 7, 5,
-            4, 0, 2,
-            2, 6, 4,
-            3, 7, 6,
-            6, 2, 3,
-            0, 4, 5,
-            5, 1, 0
+    GLuint indices[] = {
+            0, 3, 9,
+            9, 6, 0,
+            5, 17, 23,
+            23, 11, 5,
+            15, 12, 18,
+            18, 21, 15,
+            14, 2, 8,
+            8, 20, 14,
+            10, 22, 19,
+            19, 7, 10,
+            1, 13, 16,
+            16, 4, 1
     };
-
-    std::unordered_map<Vertex, int> verticesIndices;
-    GLuint* indices = new GLuint[indicesCount * 3];
-    Vertex* vertices = new Vertex[vertexCount];
-
-    int index = 0;
-    for (int i = 0; i < indicesCount; ++i) {
-        GLuint vertA = auxIndices[i * 3];
-        GLuint vertB = auxIndices[i * 3 + 1];
-        GLuint vertC = auxIndices[i * 3 + 2];
-
-        glm::vec3 normal = glm::normalize(glm::cross(auxVertex[vertA].position - auxVertex[vertB].position, auxVertex[vertB].position - auxVertex[vertC].position));
-        Vertex vertANorm({auxVertex[vertA].position, normal});
-        Vertex vertBNorm({auxVertex[vertB].position, normal});
-        Vertex vertCNorm({auxVertex[vertC].position, normal});
-
-        if (verticesIndices.find(vertANorm) != verticesIndices.end()) {
-            indices[i * 3] = verticesIndices[vertANorm];
-        } else {
-            indices[i * 3] = index;
-            vertices[index] = vertANorm;
-            verticesIndices[vertANorm] = index++;
-        }
-        if (verticesIndices.find(vertBNorm) != verticesIndices.end()) {
-            indices[i * 3 + 1] = verticesIndices[vertBNorm];
-        } else {
-            indices[i * 3 + 1] = index;
-            vertices[index] = vertBNorm;
-            verticesIndices[vertBNorm] = index++;
-        }
-        if (verticesIndices.find(vertCNorm) != verticesIndices.end()) {
-            indices[i * 3 + 2] = verticesIndices[vertCNorm];
-        } else {
-            indices[i * 3 + 2] = index;
-            vertices[index] = vertCNorm;
-            verticesIndices[vertCNorm] = index++;
-        }
-        //glm::vec3 normal = auxVertex[vertA].position - auxVertex[vertB].position
-    }
 
     iboSize = indicesCount * 3;
 
@@ -101,7 +78,4 @@ void Cube::generateCube(float width, float height, float depth) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesCount * 3 * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
     glDisableVertexAttribArray(0);
-
-    delete[] vertices;
-    delete[] indices;
 }
