@@ -4,6 +4,7 @@
 #include "Lights/PointLight.h"
 #include "Lights/DirectionalLight.h"
 #include "Camera.h"
+#include "Lights/SpotLight.h"
 #include <sstream>
 #include <fstream>
 #include <unordered_map>
@@ -13,6 +14,7 @@ private:
     GLuint shader;
     int pointLights = 0;
     int directionalLights = 0;
+    int spotLights = 0;
     std::unordered_map<std::string, GLint> uniformLocationMap;
 public:
     Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
@@ -27,5 +29,6 @@ public:
     void setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, GLfloat* matrix);
     void addUniformPointLight(const std::string& name, PointLight pointLight);
     void addUniformDirectionalLight(const std::string& name, DirectionalLight directionalLight);
+    void addUniformSpotLight(const std::string& name, SpotLight spotLight);
     GLint getUniformLocation(const std::string& name);
 };

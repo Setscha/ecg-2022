@@ -17,6 +17,7 @@ set(Header_Files
     "src/Lights/PointLight.h"
     "src/Lights/DirectionalLight.h"
     "src/ShaderManager.h"
+    "src/Lights/SpotLight.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
@@ -33,6 +34,7 @@ set(Source_Files
     "src/Lights/PointLight.cpp"
     "src/Lights/DirectionalLight.cpp"
     "src/ShaderManager.cpp"
+    "src/Lights/SpotLight.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(All_Sources ${Header_Files} ${Source_Files})

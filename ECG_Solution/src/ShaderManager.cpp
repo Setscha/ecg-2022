@@ -23,6 +23,14 @@ bool ShaderManager::addDirectionalLight(DirectionalLight directionalLight) {
     return true;
 }
 
+bool ShaderManager::addSpotLight(SpotLight spotLight) {
+    if (spotLights.size() == MAX_LIGHTS) {
+        return false;
+    }
+    spotLights.push_back(spotLight);
+    return true;
+}
+
 Shader* ShaderManager::createGouraudShader(glm::vec4 color, float ka, float kd, float ks, int alpha) {
     Shader* shader = new Shader("assets/shaders/gouraud.vsh", "assets/shaders/gouraud.fsh");
     shader->activate();
@@ -38,6 +46,10 @@ Shader* ShaderManager::createGouraudShader(glm::vec4 color, float ka, float kd, 
 
     for (const auto & directionalLight : directionalLights) {
         shader->addUniformDirectionalLight("directionalLight", directionalLight);
+    }
+
+    for (const auto & spotLight : spotLights) {
+        shader->addUniformSpotLight("spotLight", spotLight);
     }
 
     shaders.push_back(shader);
@@ -59,6 +71,10 @@ Shader* ShaderManager::createPhongShader(glm::vec4 color, float ka, float kd, fl
 
     for (const auto & directionalLight : directionalLights) {
         shader->addUniformDirectionalLight("directionalLight", directionalLight);
+    }
+
+    for (const auto & spotLight : spotLights) {
+        shader->addUniformSpotLight("spotLight", spotLight);
     }
 
     shaders.push_back(shader);

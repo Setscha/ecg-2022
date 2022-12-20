@@ -101,6 +101,22 @@ void Shader::addUniformDirectionalLight(const std::string& name, DirectionalLigh
     setUniform1i("amountOfDirectionalLights", directionalLights);
 }
 
+void Shader::addUniformSpotLight(const std::string& name, SpotLight spotLight) {
+    activate();
+    GLint loc = getUniformLocation(name + "[" + std::to_string(spotLights) + "].position");
+    glUniform3f(loc, spotLight.getPosition().x, spotLight.getPosition().y, spotLight.getPosition().z);
+    loc = getUniformLocation(name + "[" + std::to_string(spotLights) + "].direction");
+    glUniform3f(loc, spotLight.getDirection().x, spotLight.getDirection().y, spotLight.getDirection().z);
+    loc = getUniformLocation(name  + "[" + std::to_string(spotLights) + "].intensity");
+    glUniform3f(loc, spotLight.getIntensity().r, spotLight.getIntensity().g, spotLight.getIntensity().b);
+    loc = getUniformLocation(name + "[" + std::to_string(spotLights) + "].attenuation");
+    glUniform3f(loc, spotLight.getAttenuation().x, spotLight.getAttenuation().y, spotLight.getAttenuation().z);
+    loc = getUniformLocation(name + "[" + std::to_string(spotLights) + "].angle");
+    glUniform1f(loc, spotLight.getAngle());
+    spotLights++;
+    setUniform1i("amountOfSpotLights", spotLights);
+}
+
 GLint Shader::getUniformLocation(const std::string& name) {
     if (uniformLocationMap.find(name) != uniformLocationMap.end()) {
         return uniformLocationMap[name];
