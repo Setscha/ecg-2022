@@ -80,3 +80,28 @@ Shader* ShaderManager::createPhongShader(glm::vec4 color, float ka, float kd, fl
     shaders.push_back(shader);
     return shader;
 }
+
+Shader* ShaderManager::createCookTorranceShader(glm::vec4 color, float ka, float kd, float roughness, float ior) {
+    Shader* shader = new Shader("assets/shaders/cookTorrance.vsh", "assets/shaders/cookTorrance.fsh");
+    shader->activate();
+    shader->setUniform4f("inColor", color.r, color.g, color.b, color.a);
+    shader->setUniform1f("ka", ka);
+    shader->setUniform1f("kd", kd);
+    shader->setUniform1f("m", roughness);
+    shader->setUniform1f("n", ior);
+
+    for (const auto & pointLight : pointLights) {
+        shader->addUniformPointLight("pointLight", pointLight);
+    }
+
+    for (const auto & directionalLight : directionalLights) {
+        shader->addUniformDirectionalLight("directionalLight", directionalLight);
+    }
+
+    for (const auto & spotLight : spotLights) {
+        shader->addUniformSpotLight("spotLight", spotLight);
+    }
+
+    shaders.push_back(shader);
+    return shader;
+}
