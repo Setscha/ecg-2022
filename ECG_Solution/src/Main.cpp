@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
         SpotLight spotLight1({0, 0, 1}, {0.9f, 0.9f, 0.9f}, {1.2f, 1.0f, -1}, glm::radians(65.0f), {1, 0.4f, 0.1f});
         SpotLight spotLight2({0, 0, 1}, {0.4f, 0.4f, 0.9f}, {-1.2f, -1.0f, -1}, glm::radians(55.0f), {1, 0.4f, 0.1f});
         SpotLight spotLight3({1.2f, -3.5f, 0}, {0.4f, 0.8f, 0.2f}, {0, 1.0f, 0}, glm::radians(20.0f), {1, 0.4f, 0.1f});
+        SpotLight spotLight4({0, 0, -7}, {0.9f, 0.1f, 0.1f}, {0, 0, -1}, glm::radians(35.0f), {1, 0.1f, 0.01f});
 
         ShaderManager shaderManager;
         shaderManager.addPointLight(pointLight1);
@@ -137,6 +138,7 @@ int main(int argc, char **argv) {
         shaderManager.addSpotLight(spotLight1);
         shaderManager.addSpotLight(spotLight2);
         shaderManager.addSpotLight(spotLight3);
+        shaderManager.addSpotLight(spotLight4);
 
         Shader* cubeShader = shaderManager.createGouraudShader({1.0f, 0.0f, 0.0f, 1.0f}, 0.05f, 0.8f, 0.5f, 5);
         Shader* sphere1Shader = shaderManager.createPhongShader({0.0f, 1.0f, 0.0f, 1.0f}, 0.1f, 0.9f, 0.3f, 10);
@@ -157,6 +159,18 @@ int main(int argc, char **argv) {
         sphere2Shader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere2Transform.getMatrix());
         cylinderShader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
 
+        Sphere cookTorranceSphere(64, 32, 0.8f);
+        Shader* cookTorranceShaders[100];
+        Transform cookTorranceTransforms[100];
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                cookTorranceShaders[i * 10 + j] = shaderManager.createCookTorranceShader({1.0f, 1.0f, 1.0f, 1.0f}, 0.05f, 0.8f, 0.01f + 0.02f * j, 0.1f + 0.4 * i);
+                cookTorranceTransforms[i * 10 + j] = Transform();
+                cookTorranceTransforms[i * 10 + j].translate(-9.2f + i * 2, 8.8f - j * 2, -14);
+                cookTorranceShaders[i * 10 + j]->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cookTorranceTransforms[i * 10 + j].getMatrix());
+            }
+        }
+
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
             glfwPollEvents();
@@ -173,6 +187,11 @@ int main(int argc, char **argv) {
             #endif
 
             shaderManager.updateCameraValues(camera);
+
+            // Wall of spheres in the back, to test different attributes of the cook torrance shader
+            for (auto & cookTorranceShader : cookTorranceShaders) {
+                renderer.renderDrawable(*cookTorranceShader, cookTorranceSphere);
+            }
 
             renderer.renderDrawable(*cubeShader, cube);
             renderer.renderDrawable(*sphere1Shader, sphere1);
