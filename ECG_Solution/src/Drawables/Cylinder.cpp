@@ -14,16 +14,18 @@ void Cylinder::generateCylinder(int segments, float height, float radius) {
     int sIOffset = segments + 1;
     int fOffset = (2 * segments + 2) - 1;
 
-    vertices[0] = {{0, height / 2, 0}, {0, 1, 0}};
-    vertices[sIOffset] = {{0, -height / 2, 0}, {0, -1, 0}};
+    vertices[0] = {{0, height / 2, 0}, {0, 1, 0}, {0.5f, 0.5f}};
+    vertices[sIOffset] = {{0, -height / 2, 0}, {0, -1, 0}, {0.5f, 0.5f}};
 
     for (int i = 1; i <= segments; ++i) {
         // Top circle
         vertices[i] = {{radius * sin(angleIncrease * i), height / 2, radius * cos(angleIncrease * i)}, {0, 1, 0}};
-        vertices[fOffset + i] = {vertices[i].position, glm::normalize(glm::vec3(vertices[i].position.x, 0, vertices[i].position.z))};
+        vertices[i].uv = {(vertices[i].position.x + radius) / (2 * radius), (vertices[i].position.z + radius) / (2 * radius)};
+        vertices[fOffset + i] = {vertices[i].position, glm::normalize(glm::vec3(vertices[i].position.x, 0, vertices[i].position.z)), {(double) i / segments, 1}};
         // Bottom circle
         vertices[sIOffset + i] = {{vertices[i].position.x, -height / 2, vertices[i].position.z}, {0, -1, 0}};
-        vertices[fOffset - 1 + sIOffset + i] = {vertices[sIOffset + i].position, vertices[fOffset + i].normal};
+        vertices[sIOffset + i].uv = {(vertices[sIOffset + i].position.x + radius) / (2 * radius), (-vertices[sIOffset + i].position.z + radius) / (2 * radius)};
+        vertices[fOffset - 1 + sIOffset + i] = {vertices[sIOffset + i].position, vertices[fOffset + i].normal, {(double) i / segments, 0}};
     }
 
     GLuint* indices = new GLuint[indicesCount * 3];
@@ -59,6 +61,8 @@ void Cylinder::generateCylinder(int segments, float height, float radius) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, uv)));
 
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);

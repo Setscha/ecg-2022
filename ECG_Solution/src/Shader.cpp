@@ -2,6 +2,9 @@
 
 void Shader::activate() const {
     glUseProgram(shader);
+    if (texture != 0) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+    }
 }
 
 Shader::~Shader() {
@@ -124,4 +127,14 @@ GLint Shader::getUniformLocation(const std::string& name) {
     GLint id = glGetUniformLocation(shader, name.c_str());
     uniformLocationMap[name] = id;
     return id;
+}
+
+void Shader::loadTexture(const std::string &texturePath) {
+    DDSImage ddsImage = loadDDS(texturePath.c_str());
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, ddsImage.format, ddsImage.width, ddsImage.height, 0, ddsImage.size, ddsImage.data);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }

@@ -13,8 +13,8 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
 
     Vertex* vertices = new Vertex[vertexCount];
 
-    vertices[0] = {{0, radius, 0}, {0, 1, 0}};
-    vertices[vertexCount - 1] = {{0, -radius, 0}, {0, -1, 0}};
+    vertices[0] = {{0, radius, 0}, {0, 1, 0}, {0, 1}};
+    vertices[vertexCount - 1] = {{0, -radius, 0}, {0, -1, 0}, {0, 0}};
 
     for (int i = 1; i < latSegments; ++i) {
         double latSin = sin(latAngleIncrease * i);
@@ -23,6 +23,8 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
             int latOffset = longSegments * (i - 1);
             vertices[1 + latOffset + j] = {{radius * latSin * cos(longAngleIncrease * j), radius * latCos, radius * latSin * sin(longAngleIncrease * j)}};
             vertices[1 + latOffset + j].normal = glm::normalize(vertices[1 + latOffset + j].position);
+            // https://en.wikipedia.org/wiki/UV_mapping
+            vertices[1 + latOffset + j].uv = {0.5 + ((atan2(vertices[1 + latOffset + j].position.z, vertices[1 + latOffset + j].position.x)) / (M_PI * 2)), 0.5 + glm::asin(vertices[1 + latOffset + j].position.y) / M_PI};
         }
     }
 
@@ -75,6 +77,8 @@ void Sphere::generateSphere(int longSegments, int latSegments, float radius) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, uv)));
 
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
