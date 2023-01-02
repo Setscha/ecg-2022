@@ -23,10 +23,11 @@ struct SpotLight {
 
 in vec3 fragPos;
 in vec3 fragNormal;
+in vec2 fragTexCoordinate;
 
 out vec4 color;
 
-uniform vec4 inColor;
+uniform sampler2D textureIn;
 // ambient lighting factor
 uniform float ka;
 // diffuse lighting factor
@@ -76,7 +77,7 @@ void main() {
         specularIntensity += calculateSpecularFromSpotLight(spotLight[i]);
     }
 
-    color = inColor * vec4(lightIntensity, 1.0f) + vec4(specularIntensity, 1.0f);
+    color = texture(textureIn, fragTexCoordinate) * vec4(lightIntensity, 1.0f) + vec4(specularIntensity, 1.0f);
 }
 
 vec3 calculateDiffuseFromDirectionalLight(DirectionalLight directionalLight) {

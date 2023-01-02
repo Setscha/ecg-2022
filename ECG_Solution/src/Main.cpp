@@ -113,63 +113,30 @@ int main(int argc, char **argv) {
         glm::mat4 viewMatrix;
 
         Cube cube(1.5f, 1.5f, 1.5f);
-        Sphere sphere1(32, 16, 1.0f);
-        Sphere sphere2(32, 16, 1.0f);
-        Cylinder cylinder(16, 1.5f, 1.0f);
+        Sphere sphere(64, 32, 1.0f);
+        Cylinder cylinder(31, 1.3f, 1.0f);
 
         PointLight pointLight1({0, 0, 0}, {1, 1, 1}, {1.0f, 0.4f, 0.1f});
-        PointLight pointLight2({1.2, 0, 0}, {0.2, 0.3, 0.4}, {1.0f, 0.4f, 0.1f});
-        PointLight pointLight3({-1.2, 0, 0}, {0.4, 0.4, 0.3}, {1.0f, 0.4f, 0.1f});
         DirectionalLight directionalLight1({0, -1, -1}, {0.8f, 0.8f, 0.8f});
-        DirectionalLight directionalLight2({0, 1, 1}, {0.3f, 0.3f, 0.9f});
-        DirectionalLight directionalLight3({1, -1, 0}, {0.2f, 0.2f, 0.2f});
-        SpotLight spotLight1({0, 0, 1}, {0.9f, 0.9f, 0.9f}, {1.2f, 1.0f, -1}, glm::radians(65.0f), {1, 0.4f, 0.1f});
-        SpotLight spotLight2({0, 0, 1}, {0.4f, 0.4f, 0.9f}, {-1.2f, -1.0f, -1}, glm::radians(55.0f), {1, 0.4f, 0.1f});
-        SpotLight spotLight3({1.2f, -3.5f, 0}, {0.4f, 0.8f, 0.2f}, {0, 1.0f, 0}, glm::radians(20.0f), {1, 0.4f, 0.1f});
-        SpotLight spotLight4({0, 0, -7}, {0.9f, 0.1f, 0.1f}, {0, 0, -1}, glm::radians(35.0f), {1, 0.1f, 0.01f});
 
         ShaderManager shaderManager;
         shaderManager.addPointLight(pointLight1);
-        shaderManager.addPointLight(pointLight2);
-        shaderManager.addPointLight(pointLight3);
         shaderManager.addDirectionalLight(directionalLight1);
-        shaderManager.addDirectionalLight(directionalLight2);
-        shaderManager.addDirectionalLight(directionalLight3);
-        shaderManager.addSpotLight(spotLight1);
-        shaderManager.addSpotLight(spotLight2);
-        shaderManager.addSpotLight(spotLight3);
-        shaderManager.addSpotLight(spotLight4);
 
-        Shader* cubeShader = shaderManager.createGouraudShader({1.0f, 0.0f, 0.0f, 1.0f}, 0.05f, 0.8f, 0.5f, 5);
-        Shader* sphere1Shader = shaderManager.createPhongShader({0.0f, 1.0f, 0.0f, 1.0f}, 0.1f, 0.9f, 0.3f, 10);
-        Shader* sphere2Shader = shaderManager.createGouraudShader({1.0f, 0.0f, 0.0f, 1.0f}, 0.1f, 0.9f, 0.3f, 10);
-        Shader* cylinderShader = shaderManager.createPhongShader({0.0f, 1.0f, 0.0f, 1.0f}, 0.05f, 0.8f, 0.5f, 5);
+        Shader* cubeShader = shaderManager.createPhongShader("assets/textures/wood_texture.dds", 0.1f, 0.7f, 0.1f, 2);
+        Shader* cylinderShader = shaderManager.createPhongShader("assets/textures/tiles_diffuse.dds", 0.1f, 0.7f, 0.3f, 8);
+        Shader* sphereShader = shaderManager.createPhongShader("assets/textures/tiles_diffuse.dds", 0.1f, 0.7f, 0.3f, 8);
 
         Transform cubeTransform;
-        cubeTransform.translate(-1.2f, -1.5f, 0);
-        Transform sphere1Transform;
-        sphere1Transform.translate(-1.2f, 1.0f, 0);
-        Transform sphere2Transform;
-        sphere2Transform.translate(1.2f, 1.0f, 0);
+        cubeTransform.translate(-1.4f, -1.0f, 0);
+        Transform sphereTransform;
+        sphereTransform.translate(0, 1.4f, 0);
         Transform cylinderTransform;
-        cylinderTransform.translate(1.2f, -1.5f, 0);
+        cylinderTransform.translate(1.4f, -1.0f, 0);
 
         cubeShader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cubeTransform.getMatrix());
-        sphere1Shader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere1Transform.getMatrix());
-        sphere2Shader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphere2Transform.getMatrix());
+        sphereShader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, sphereTransform.getMatrix());
         cylinderShader->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cylinderTransform.getMatrix());
-
-        Sphere cookTorranceSphere(64, 32, 0.8f);
-        Shader* cookTorranceShaders[100];
-        Transform cookTorranceTransforms[100];
-        for (int i = 0; i < 10; ++i) {
-            for (int j = 0; j < 10; ++j) {
-                cookTorranceShaders[i * 10 + j] = shaderManager.createCookTorranceShader({1.0f, 1.0f, 1.0f, 1.0f}, 0.05f, 0.8f, 0.01f + 0.02f * j, 0.1f + 0.4 * i);
-                cookTorranceTransforms[i * 10 + j] = Transform();
-                cookTorranceTransforms[i * 10 + j].translate(-9.2f + i * 2, 8.8f - j * 2, -14);
-                cookTorranceShaders[i * 10 + j]->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, cookTorranceTransforms[i * 10 + j].getMatrix());
-            }
-        }
 
         while (!glfwWindowShouldClose(window)) {
             renderer.clear();
@@ -188,14 +155,8 @@ int main(int argc, char **argv) {
 
             shaderManager.updateCameraValues(camera);
 
-            // Wall of spheres in the back, to test different attributes of the cook torrance shader
-            for (auto & cookTorranceShader : cookTorranceShaders) {
-                renderer.renderDrawable(*cookTorranceShader, cookTorranceSphere);
-            }
-
             renderer.renderDrawable(*cubeShader, cube);
-            renderer.renderDrawable(*sphere1Shader, sphere1);
-            renderer.renderDrawable(*sphere2Shader, sphere2);
+            renderer.renderDrawable(*sphereShader, sphere);
             renderer.renderDrawable(*cylinderShader, cylinder);
 
             glfwSwapBuffers(window);
