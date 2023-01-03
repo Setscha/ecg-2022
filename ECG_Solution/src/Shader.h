@@ -15,14 +15,15 @@ private:
     int pointLights = 0;
     int directionalLights = 0;
     int spotLights = 0;
-    GLuint texture = 0;
+    GLuint diffuseTexture = 0;
+    GLuint specularTexture = 0;
     std::unordered_map<std::string, GLint> uniformLocationMap;
 public:
     Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
     ~Shader();
     GLuint compileShader(GLuint type, const std::string& path) const;
-    void activate() const;
-    void loadTexture(const std::string& texturePath);
+    void activate();
+    void loadTexture(const std::string& texturePath, int unit);
     void setUniform4f(const std::string& name, float v1, float v2, float v3, float v4);
     void setUniform3f(const std::string& name, float v1, float v2, float v3);
     void setUniform1f(const std::string& name, float v);

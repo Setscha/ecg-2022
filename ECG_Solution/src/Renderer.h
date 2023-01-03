@@ -6,6 +6,6 @@
 class Renderer {
 public:
     void clear() const;
-    void renderDrawable(const Shader& shader, Drawable& drawable);
-    void drawTeapot(const Shader& shader) const;
+    void renderDrawable(Shader& shader, Drawable& drawable);
+    void drawTeapot(Shader& shader) const;
 };

@@ -27,7 +27,8 @@ in vec2 fragTexCoordinate;
 
 out vec4 color;
 
-uniform sampler2D textureIn;
+uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
 // ambient lighting factor
 uniform float ka;
 // diffuse lighting factor
@@ -77,7 +78,7 @@ void main() {
         specularIntensity += calculateSpecularFromSpotLight(spotLight[i]);
     }
 
-    color = texture(textureIn, fragTexCoordinate) * vec4(lightIntensity, 1.0f) + vec4(specularIntensity, 1.0f);
+    color = texture(diffuseTexture, fragTexCoordinate) * vec4(lightIntensity, 1.0f) + texture(specularTexture, fragTexCoordinate) * vec4(specularIntensity, 1.0f);
 }
 
 vec3 calculateDiffuseFromDirectionalLight(DirectionalLight directionalLight) {
