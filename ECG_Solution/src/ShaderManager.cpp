@@ -106,10 +106,11 @@ Shader* ShaderManager::createCookTorranceShader(glm::vec4 color, float ka, float
     return shader;
 }
 
-Shader *ShaderManager::createPhongShader(const string& texturePath, float ka, float kd, float ks, int alpha) {
+Shader *ShaderManager::createPhongShader(const std::string& diffuseTexture, const std::string& specularTexture, float ka, float kd, float ks, int alpha) {
     Shader* shader = new Shader("assets/shaders/phong.vsh", "assets/shaders/phong.fsh");
     shader->activate();
-    shader->loadTexture(texturePath);
+    shader->loadTexture(diffuseTexture, 0);
+    shader->loadTexture(specularTexture, 1);
     shader->setUniform1f("ka", ka);
     shader->setUniform1f("kd", kd);
     shader->setUniform1f("ks", ks);

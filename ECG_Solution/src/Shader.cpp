@@ -1,9 +1,16 @@
 #include "Shader.h"
 
-void Shader::activate() const {
+void Shader::activate() {
     glUseProgram(shader);
-    if (texture != 0) {
-        glBindTexture(GL_TEXTURE_2D, texture);
+    if (diffuseTexture != 0) {
+        glActiveTexture(GL_TEXTURE0 + 0);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+        glUniform1i(getUniformLocation("diffuseTexture"), 0);
+    }
+    if (specularTexture != 0) {
+        glActiveTexture(GL_TEXTURE0 + 1);
+        glBindTexture(GL_TEXTURE_2D, specularTexture);
+        glUniform1i(getUniformLocation("specularTexture"), 1);
     }
 }
 
@@ -129,10 +136,15 @@ GLint Shader::getUniformLocation(const std::string& name) {
     return id;
 }
 
-void Shader::loadTexture(const std::string &texturePath) {
+void Shader::loadTexture(const std::string &texturePath, int unit) {
     DDSImage ddsImage = loadDDS(texturePath.c_str());
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    if (unit == 0) {
+        glGenTextures(1, &diffuseTexture);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+    } else if (unit == 1) {
+        glGenTextures(1, &specularTexture);
+        glBindTexture(GL_TEXTURE_2D, specularTexture);
+    }
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glCompressedTexImage2D(GL_TEXTURE_2D, 0, ddsImage.format, ddsImage.width, ddsImage.height, 0, ddsImage.size, ddsImage.data);

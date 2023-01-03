@@ -123,9 +123,9 @@ int main(int argc, char **argv) {
         shaderManager.addPointLight(pointLight1);
         shaderManager.addDirectionalLight(directionalLight1);
 
-        Shader* cubeShader = shaderManager.createPhongShader("assets/textures/wood_texture.dds", 0.1f, 0.7f, 0.1f, 2);
-        Shader* cylinderShader = shaderManager.createPhongShader("assets/textures/tiles_diffuse.dds", 0.1f, 0.7f, 0.3f, 8);
-        Shader* sphereShader = shaderManager.createPhongShader("assets/textures/tiles_diffuse.dds", 0.1f, 0.7f, 0.3f, 8);
+        Shader* cubeShader = shaderManager.createPhongShader("assets/textures/wood_texture.dds", "assets/textures/wood_texture_specular.dds", 0.1f, 0.7f, 0.1f, 2);
+        Shader* cylinderShader = shaderManager.createPhongShader("assets/textures/tiles_diffuse.dds", "assets/textures/tiles_specular.dds", 0.1f, 0.7f, 0.3f, 8);
+        Shader* sphereShader = shaderManager.createPhongShader("assets/textures/tiles_diffuse.dds", "assets/textures/tiles_specular.dds", 0.1f, 0.7f, 0.3f, 8);
 
         Transform cubeTransform;
         cubeTransform.translate(-1.4f, -1.0f, 0);
